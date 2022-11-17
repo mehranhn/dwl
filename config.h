@@ -19,14 +19,42 @@ static const float focuscolor[]     = {1.0, 0.0, 0.0, 1.0};
 static const float fullscreen_bg[]  = {0.1, 0.1, 0.1, 1.0};
 
 static const Rule rules[] = {
-	/* app_id     title       tags mask   isfloating    monitor x,y,w,h */
+	/* id                app_id           title   tags    mask   isfloating    monitor x,y,w,h               cmd */
  	/* examples:
 	{ "Gimp",     NULL,       0,            1,           -1, 	0,0,500,400 },
 	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200,100,0,0 },
 	/* x, y, width, heigh are floating only
 	* When x or y == 0 the client is placed at the center of the screen,
 	* when width or height == 0 the default size of the client is used*/
-	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200,100,0,0 },
+	{ "firefox",        "firefox",        NULL,       1 << 1,       0,           -1, 	    0,0,0,0,              {"firefox", NULL} },
+	{ "librewolf",      "librewolf",      NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"librewolf", NULL} },
+	{ "chromium",       "Chromium",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"chromium", "--ozone-platform-hint=auto", NULL} },
+	{ "freetube",       "FreeTube",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "mranger",        "Mranger",        NULL,       1 << 2,       0,           -1,        50,50,500,500,        {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
+	{ "mlf",            "Mlf",            NULL,       1 << 2,       0,           -1,        50,50,500,500,        {"footclient", "-a", "Mlf", "-T", "lf", "-L", "lf", NULL} },
+	{ "mpv",            "mpv",            NULL,       1 << 2,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "nuclear",        "nuclear",        NULL,       1 << 2,       0,           -1,        50,50,500,500,        {"flatpak", "run", "org.js.nuclear.Nuclear", NULL} },
+	{ "code-oss",       "code-oss",       NULL,       1 << 3,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "vscodium",       "VSCodium",       NULL,       1 << 3,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "mnvim",          "Mnvim",          NULL,       1 << 3,       0,           -1,        50,50,500,500,        {"footclient", "-a", "Mnvim", "-T", "Neovim", "-L", "tmux", "new", "-s", "nvim", "-n", "nvim", "-AD", "nvim", NULL} },
+	{ "neovide",        "neovide",        NULL,       1 << 3,       0,           -1,        50,50,500,500,        {"neovide", NULL} },
+	{ "neovide-mg",     "neovide",        NULL,       1 << 3,       0,           -1,        50,50,500,500,        {"neovide", "--multigrid", NULL} },
+	{ "insomnia",       "Insomnia",       NULL,       1 << 3,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "virt-manager",   "Virt-manager",   NULL,       1 << 4,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "dota2",          "dota2",          NULL,       1 << 4,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "wowclassic.exe", "wowclassic.exe", NULL,       1 << 4,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "discord",        "discord",        NULL,       1 << 5,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "ferdium",        "Ferdium",        NULL,       1 << 5,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "lutris",         "Lutris",         NULL,       1 << 6,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "steam",          "Steam",          NULL,       1 << 6,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "gimp",           "Gimp",           NULL,       1 << 7,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "krita",          "krita",          NULL,       1 << 7,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "obs",            "obs",            NULL,       1 << 7,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "qbittorrent",    "qBittorrent",    NULL,       1 << 8,       0,           -1,        50,50,500,500,        {NULL} },
+	{ "mcmus",          "Mcmus",          NULL,       0,            1,           -1,        0,0,1820,991,         {"footclient", "-a", "Mcmus", "-T", "cmus", "-L", "cmus", NULL} },
+	{ "mbtop",          "Mbtop",          NULL,       0,            1,           -1,        0,0,1820,991,         {"footclient", "-a", "Mbtop", "-T", "btop", "-L", "btop", "-p", "0", NULL} },
+	{ "mpacmixer",      "Mpacmixer",      NULL,       0,            1,           -1,        1413,473,500,600,     {"footclient", "-a", "Mpacmixer", "-T", "pacmixer", "-L", "pacmixer",  NULL} },
+	{ "pavucontrol",    "pavucontrol",    NULL,       0,            1,           -1,        1413,473,500,600,     {"pavucontrol", "-t", "4", NULL} },
 };
 
 /* layout(s) */
@@ -188,6 +216,16 @@ static const Key keys[] = {
 	CHVT(Key_F1, 1), CHVT(Key_F2,  2),  CHVT(Key_F3,  3),  CHVT(Key_F4,  4),
 	CHVT(Key_F5, 5), CHVT(Key_F6,  6),  CHVT(Key_F7,  7),  CHVT(Key_F8,  8),
 	CHVT(Key_F9, 9), CHVT(Key_F10, 10), CHVT(Key_F11, 11), CHVT(Key_F12, 12),
+    /* window rules */
+    { MODKEY,                       Key_b,                     spawnorfocus,             {.v = "librewolf"} },
+    { MODKEY|WLR_MODIFIER_SHIFT,    Key_b,                     spawnorfocus,             {.v = "chromium"} },
+    { MODKEY,                       Key_e,                     spawnorfocus,             {.v = "mlf"} },
+    { MODKEY,                       Key_c,                     spawnorfocus,             {.v = "mnvim"} },
+    { MODKEY,                       Key_v,                     spawnorfocus,             {.v = "mcmus"} },
+    { MODKEY|WLR_MODIFIER_SHIFT,    Key_v,                     spawnorfocus,             {.v = "mpv"} },
+    { MODKEY|WLR_MODIFIER_SHIFT,    Key_m,                     spawnorfocus,             {.v = "nuclear"} },
+    { MODKEY|WLR_MODIFIER_SHIFT,    Key_p,                     spawnorfocus,             {.v = "lxtask"} },
+    { MODKEY|WLR_MODIFIER_SHIFT,    Key_o,                     spawnorfocus,             {.v = "pavucontrol"} },
 };
 
 static const Button buttons[] = {
