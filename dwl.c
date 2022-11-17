@@ -288,6 +288,8 @@ static Client *selclient(void);
 static void setcursor(struct wl_listener *listener, void *data);
 static void setfloating(Client *c, int floating);
 static void setfullscreen(Client *c, int fullscreen);
+static void setgamemod(int is_on);
+static void setgamemodarg(const Arg *arg);
 static void setgaps(int oh, int ov, int ih, int iv);
 static void setkbrepeat(int repeat_rate, int repeat_delay);
 static void setkbrepeatarg(const Arg *args);
@@ -301,6 +303,8 @@ static void setsel(struct wl_listener *listener, void *data);
 static void setup(void);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
+static void spawnnotgamemode(const Arg *arg);
+static void spawnutil(char** args);
 static void startdrag(struct wl_listener *listener, void *data);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
@@ -308,6 +312,7 @@ static void tile(Monitor *m);
 static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
 static void togglegaps(const Arg *arg);
+static void togglegamemod(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unmaplayersurfacenotify(struct wl_listener *listener, void *data);
@@ -365,6 +370,8 @@ static int enablegaps = 1;   /* enables gaps, used by togglegaps */
 static struct xkb_rule_names *current_xkb_rules;
 static int current_repeat_rate;
 static int current_repeat_delay;
+
+static int is_game_mode_on = 0;
 
 /* global event handlers */
 static struct wl_listener cursor_axis = {.notify = axisnotify};
@@ -2184,6 +2191,25 @@ setfullscreen(Client *c, int fullscreen)
 }
 
 void
+setgamemod(int is_on) {
+	is_game_mode_on = is_on;
+	if (is_on) {
+		const char *args[] = {"dunstify", "-r", "8000", "-a", "dwl", "-u", "low", "-i", "gamepad-solid", "Game Mode", "On", NULL};
+		setkbrules(&xkb_rules_gamemod);
+		spawnutil((char**) args);
+	} else {
+		const char *args[] = {"dunstify", "-r", "8000", "-a", "dwl", "-u", "low", "-i", "gamepad-solid", "Game Mode", "Off", NULL};
+		setkbrules(&xkb_rules);
+		spawnutil((char**) args);
+	}
+}
+
+void
+setgamemodarg(const Arg *arg){
+	setgamemod(arg->i);
+}
+
+void
 setgaps(int oh, int ov, int ih, int iv)
 {
 	selmon->gappoh = MAX(oh, 0);
@@ -2531,11 +2557,23 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
+	spawnutil((char **)arg->v);
+}
+
+void
+spawnnotgamemode(const Arg *arg)
+{
+	if (!is_game_mode_on)
+		spawnutil((char **)arg->v);
+}
+
+void
+spawnutil(char** args) {
 	if (fork() == 0) {
 		dup2(STDERR_FILENO, STDOUT_FILENO);
 		setsid();
-		execvp(((char **)arg->v)[0], (char **)arg->v);
-		die("dwl: execvp %s failed:", ((char **)arg->v)[0]);
+		execvp((args)[0], args);
+		die("dwl: execvp %s failed:", args[0]);
 	}
 }
 
@@ -2642,6 +2680,12 @@ togglegaps(const Arg *arg)
 {
 	enablegaps = !enablegaps;
 	arrange(selmon);
+}
+
+void
+togglegamemod(const Arg *arg)
+{
+	setgamemod(!is_game_mode_on);
 }
 
 void

@@ -9,3 +9,4 @@ customfloat
 push
 pertag
 my setkeyboardconfig
+my gamemode

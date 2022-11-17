@@ -59,6 +59,13 @@ static const struct xkb_rule_names xkb_rules = {
 	.options = NULL,
 };
 
+static const struct xkb_rule_names xkb_rules_gamemod = {
+	.model = "pc104",
+	.layout = "us",
+	.variant = "colemak",
+	.options = "caps:backspace",
+};
+
 static const int repeat_rate = 25;
 static const int repeat_delay = 600;
 
@@ -125,7 +132,7 @@ static const char *menucmd[] = { "bemenu-run", NULL };
 static const Key keys[] = {
 	/* modifier                                          key                          function                argument */
 	{ MODKEY,                                            Key_p,                       spawn,                  {.v = menucmd} },
-	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_Return,                  spawn,                  {.v = termcmd} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_Return,                  spawnnotgamemode,       {.v = termcmd} },
 	{ MODKEY,                                            Key_j,                       focusstack,             {.i = +1} },
 	{ MODKEY,                                            Key_k,                       focusstack,             {.i = -1} },
 	{ MODKEY,                                            Key_i,                       incnmaster,             {.i = +1} },
@@ -163,6 +170,7 @@ static const Key keys[] = {
 	{ MODKEY,                                            Key_period,                  focusmon,               {.i = WLR_DIRECTION_RIGHT} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_comma,                   tagmon,                 {.i = WLR_DIRECTION_LEFT} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_period,                  tagmon,                 {.i = WLR_DIRECTION_RIGHT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_backslash,               togglegamemod,          {0} },
 	TAGKEYS(                                             Key_1,                       0),
 	TAGKEYS(                                             Key_2,                       1),
 	TAGKEYS(                                             Key_3,                       2),
