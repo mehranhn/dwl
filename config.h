@@ -128,6 +128,8 @@ static const Key keys[] = {
 	{ MODKEY,                                            Key_q,                       spawn,                  {.v = termcmd} },
 	{ MODKEY,                                            Key_j,                       focusstack,             {.i = +1} },
 	{ MODKEY,                                            Key_k,                       focusstack,             {.i = -1} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_j,                       pushdown,               {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_k,                       pushup,                 {0} },
 	{ MODKEY,                                            Key_i,                       incnmaster,             {.i = +1} },
 	{ MODKEY,                                            Key_d,                       incnmaster,             {.i = -1} },
 	{ MODKEY,                                            Key_h,                       setmfact,               {.f = -0.05} },
