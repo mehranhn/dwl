@@ -2,3 +2,4 @@ makedesktop
 alwayscenter
 attachbottom
 smartborders
+autostart

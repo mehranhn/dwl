@@ -90,6 +90,12 @@ LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE
 static const enum libinput_config_accel_profile accel_profile = LIBINPUT_CONFIG_ACCEL_PROFILE_ADAPTIVE;
 static const double accel_speed = 0.0;
 
+/* Autostart */
+static const char *const autostart[] = {
+	"swaybg", "-i", "/usr/share/backgrounds/wallpapers/wallpaper_7.jpg", "-m", "fill", "-o", "*", NULL,
+	NULL /* terminate */
+};
+
 /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
 #define MODKEY WLR_MODIFIER_LOGO
 
