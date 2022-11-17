@@ -6,6 +6,12 @@ static const int sloppyfocus        = 1;  /* focus follows mouse */
 static const unsigned int borderpx  = 1;  /* border pixel of windows */
 static const int lockfullscreen     = 1;  /* 1 will force focus on the fullscreen window */
 static const int smartborders       = 1;
+static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
+static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
+static const int monoclegaps        = 0;        /* 1 means outer gaps in monocle layout */
 static const float rootcolor[]      = {0.3, 0.3, 0.3, 1.0};
 static const float bordercolor[]    = {0.5, 0.5, 0.5, 1.0};
 static const float focuscolor[]     = {1.0, 0.0, 0.0, 1.0};
@@ -114,43 +120,59 @@ static const char *menucmd[] = { "bemenu-run", NULL };
 
 #include "keys.h"
 static const Key keys[] = {
-	/* modifier                  key          function        argument */
-	{ MODKEY,                    Key_p,       spawn,          {.v = menucmd} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_Return,  spawn,          {.v = termcmd} },
-	{ MODKEY,                    Key_j,       focusstack,     {.i = +1} },
-	{ MODKEY,                    Key_k,       focusstack,     {.i = -1} },
-	{ MODKEY,                    Key_i,       incnmaster,     {.i = +1} },
-	{ MODKEY,                    Key_d,       incnmaster,     {.i = -1} },
-	{ MODKEY,                    Key_h,       setmfact,       {.f = -0.05} },
-	{ MODKEY,                    Key_l,       setmfact,       {.f = +0.05} },
-	{ MODKEY,                    Key_Return,  zoom,           {0} },
-	{ MODKEY,                    Key_Tab,     view,           {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_c,       killclient,     {0} },
-	{ MODKEY,                    Key_t,       setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                    Key_f,       setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                    Key_m,       setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                    Key_space,   setlayout,      {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_space,   togglefloating, {0} },
-	{ MODKEY,                    Key_e,       togglefullscreen, {0} },
-	{ MODKEY,                    Key_0,       view,           {.ui = ~0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_0,       tag,            {.ui = ~0} },
-	{ MODKEY,                    Key_comma,   focusmon,       {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY,                    Key_period,  focusmon,       {.i = WLR_DIRECTION_RIGHT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_comma,   tagmon,         {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_period,  tagmon,         {.i = WLR_DIRECTION_RIGHT} },
-	TAGKEYS(                     Key_1,                       0),
-	TAGKEYS(                     Key_2,                       1),
-	TAGKEYS(                     Key_3,                       2),
-	TAGKEYS(                     Key_4,                       3),
-	TAGKEYS(                     Key_5,                       4),
-	TAGKEYS(                     Key_6,                       5),
-	TAGKEYS(                     Key_7,                       6),
-	TAGKEYS(                     Key_8,                       7),
-	TAGKEYS(                     Key_9,                       8),
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_q,       quit,           {0} },
+	/* modifier                                          key                          function                argument */
+	{ MODKEY,                                            Key_p,                       spawn,                  {.v = menucmd} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_Return,                  spawn,                  {.v = termcmd} },
+	{ MODKEY,                                            Key_j,                       focusstack,             {.i = +1} },
+	{ MODKEY,                                            Key_k,                       focusstack,             {.i = -1} },
+	{ MODKEY,                                            Key_i,                       incnmaster,             {.i = +1} },
+	{ MODKEY,                                            Key_d,                       incnmaster,             {.i = -1} },
+	{ MODKEY,                                            Key_h,                       setmfact,               {.f = -0.05} },
+	{ MODKEY,                                            Key_l,                       setmfact,               {.f = +0.05} },
+	{ MODKEY|WLR_MODIFIER_LOGO,                          Key_h,                       incgaps,                {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,                          Key_l,                       incgaps,                {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,       Key_h,                       incogaps,               {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,       Key_l,                       incogaps,               {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_CTRL,        XKB_KEY_h,                   incigaps,               {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_CTRL,        Key_l,                       incigaps,               {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,                          Key_0,                       togglegaps,             {0} },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,       Key_parenright,              defaultgaps,            {0} },
+	{ MODKEY,                                            Key_y,                       incihgaps,              {.i = +1 } },
+	{ MODKEY,                                            Key_o,                       incihgaps,              {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_CTRL,                          Key_y,                       incivgaps,              {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_CTRL,                          Key_o,                       incivgaps,              {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,                          Key_y,                       incohgaps,              {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,                          Key_o,                       incohgaps,              {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_y,                       incovgaps,              {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_o,                       incovgaps,              {.i = -1 } },
+	{ MODKEY,                                            Key_Return,                  zoom,                   {0} },
+	{ MODKEY,                                            Key_Tab,                     view,                   {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_c,                       killclient,             {0} },
+	{ MODKEY,                                            Key_t,                       setlayout,              {.v = &layouts[0]} },
+	{ MODKEY,                                            Key_f,                       setlayout,              {.v = &layouts[1]} },
+	{ MODKEY,                                            Key_m,                       setlayout,              {.v = &layouts[2]} },
+	{ MODKEY,                                            Key_space,                   setlayout,              {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_space,                   togglefloating,         {0} },
+	{ MODKEY,                                            Key_e,                       togglefullscreen,       {0} },
+	{ MODKEY,                                            Key_0,                       view,                   {.ui = ~0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_0,                       tag,                    {.ui = ~0} },
+	{ MODKEY,                                            Key_comma,                   focusmon,               {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY,                                            Key_period,                  focusmon,               {.i = WLR_DIRECTION_RIGHT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_comma,                   tagmon,                 {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_period,                  tagmon,                 {.i = WLR_DIRECTION_RIGHT} },
+	TAGKEYS(                                             Key_1,                       0),
+	TAGKEYS(                                             Key_2,                       1),
+	TAGKEYS(                                             Key_3,                       2),
+	TAGKEYS(                                             Key_4,                       3),
+	TAGKEYS(                                             Key_5,                       4),
+	TAGKEYS(                                             Key_6,                       5),
+	TAGKEYS(                                             Key_7,                       6),
+	TAGKEYS(                                             Key_8,                       7),
+	TAGKEYS(                                             Key_9,                       8),
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_q,                       quit,                   {0} },
 
 	/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
-	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,Key_BackSpace, quit, {0} },
+	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,                Key_BackSpace,               quit,                   {0} },
 #define CHVT(KEY,n) { WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT, KEY, chvt, {.ui = (n)} }
 	CHVT(Key_F1, 1), CHVT(Key_F2,  2),  CHVT(Key_F3,  3),  CHVT(Key_F4,  4),
 	CHVT(Key_F5, 5), CHVT(Key_F6,  6),  CHVT(Key_F7,  7),  CHVT(Key_F8,  8),
