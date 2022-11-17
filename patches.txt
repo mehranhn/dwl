@@ -5,3 +5,4 @@ smartborders
 autostart
 keycodes
 vanitygaps
+customfloat

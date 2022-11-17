@@ -205,6 +205,10 @@ typedef struct {
 	unsigned int tags;
 	int isfloating;
 	int monitor;
+	int x;
+	int y;
+	int w;
+	int h;
 } Rule;
 
 /* function declarations */
@@ -532,6 +536,13 @@ applyrules(Client *c)
 			wl_list_for_each(m, &mons, link)
 				if (r->monitor == i++)
 					mon = m;
+			if (c->isfloating)
+				resize(c, (struct wlr_box) {
+					.x = r->x ? r->x + mon->w.x : mon->w.width / 2 - c->geom.width / 2 + mon->w.x,
+					.y = r->y ? r->y + mon->w.y : mon->w.height / 2 - c->geom.height / 2 + mon->w.y,
+					.width = r->w ? r->w : c->geom.width,
+					.height = r->h ? r->h : c->geom.height,
+				}, 1, 1);
 		}
 	}
 #if PATCHALWAYSCENTER
