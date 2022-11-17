@@ -29,6 +29,11 @@ static const Rule rules[] = {
 	{ "firefox",        "firefox",        NULL,   1 << 1, 0,     -1,           0,      0,0,0,0,              {"firefox", NULL} },
 };
 
+static ToggleProc toggleprocs[] = {
+	/* id               autosatrt   signal       notification title     notification icon    cmd           not my real location                      0 */
+	{ "gammastep",      1,          SIGTERM,     "Blue Light Filter",   "eye-solid",         {"gammastep", "-l", "36.51212:51.1251775", "-r", NULL}, 0},
+};
+
 /* layout(s) */
 static const Layout layouts[] = {
 	/* symbol     arrange function */

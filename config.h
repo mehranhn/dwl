@@ -57,6 +57,11 @@ static const Rule rules[] = {
 	{ "pavucontrol",    "pavucontrol",    NULL,       0,            1,           -1,        1413,473,500,600,     {"pavucontrol", "-t", "4", NULL} },
 };
 
+static ToggleProc toggleprocs[] = {
+	/* id               autosatrt   signal       notification ID  notification title     notification icon    cmd           not my real location                      0 */
+	{ "gammastep",      1,          SIGTERM,     "8001",          "Blue Light Filter",   "eye-solid",         {"gammastep", "-l", "36.51212:51.1251775", "-r", NULL}, 0},
+};
+
 /* layout(s) */
 static const Layout layouts[] = {
 	/* symbol     arrange function */
@@ -226,6 +231,8 @@ static const Key keys[] = {
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_m,                     spawnorfocus,             {.v = "nuclear"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_p,                     spawnorfocus,             {.v = "lxtask"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_o,                     spawnorfocus,             {.v = "pavucontrol"} },
+
+	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
 };
 
 static const Button buttons[] = {
