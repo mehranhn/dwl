@@ -1,6 +1,8 @@
 #define PATCHALWAYSCENTER 1
 #define PATCHATTACHBOTTOM 1
 
+#define SYSTEMD 1
+
 /* appearance */
 static const int sloppyfocus        = 1;  /* focus follows mouse */
 static const unsigned int borderpx  = 1;  /* border pixel of windows */
@@ -155,7 +157,28 @@ static const double accel_speed = 0.0;
 
 /* Autostart */
 static const char *const autostart[] = {
+#if !SYSTEMD
+	"pipewire", NULL,
+	"pipewire-pulse", NULL,
+	"pipewire-media-session", NULL,
+	"/bin/sh", "-c", "sleep 1 && pipewire -c /home/mhn/.config/noice-suppression-for-voice/filter-chain.conf", NULL,
+	"brightnessctl", "-d", "intel_backlight", "set", "50%", NULL,
+	"brightnessctl", "-d", "asus::kbd_backlight", "set", "1", NULL,
+#else
+#endif
+	"swayidle", NULL,
+	"lf", "-server", NULL,
+	"dbus-update-activation-environment", "--all", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP=dwl", NULL,
+	"dunst", "~/.config/dunst/dunstrc", NULL,
 	"swaybg", "-i", "/usr/share/backgrounds/wallpapers/wallpaper_7.jpg", "-m", "fill", "-o", "*", NULL,
+	"udiskie", NULL,
+	// "kdeconnect-cli", "--refresh", NULL,
+	"lxqt-policykit-agent", NULL,
+	"foot", "--server", NULL,
+	// "nm-applet", NULL,
+	// "blueman-applet", NULL,
+	// "asusctl", "profile", "-P", "Quiet", NULL,
+	"import-gsettings", NULL,
 	NULL /* terminate */
 };
 
@@ -164,14 +187,14 @@ static const char *const autostart[] = {
 
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_SHIFT, KEY,            tag,             {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,KEY,toggletag,  {.ui = 1 << TAG} }
+	{ MODKEY|WLR_MODIFIER_SHIFT, KEY,            tag,             {.ui = 1 << TAG} }
+	// { MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }, \
+	// { MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,KEY,toggletag,  {.ui = 1 << TAG} }
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[] = { "foot", NULL };
+static const char *termcmd[] = { "footclient", NULL };
 static const char *menucmd[] = { "bemenu-run", NULL };
 
 #include "keys.h"
@@ -231,8 +254,32 @@ static const Key keys[] = {
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_m,                     spawnorfocus,             {.v = "nuclear"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_p,                     spawnorfocus,             {.v = "lxtask"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_o,                     spawnorfocus,             {.v = "pavucontrol"} },
-
+	/* toggleprocs */
 	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
+	/* general tasks */
+	{ MODKEY|WLR_MODIFIER_ALT,      Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_path", NULL}} },
+	{ WLR_MODIFIER_ALT,             Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_desktop", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_q,                     spawn,                    {.v = (char *[]){"mcontrol", "menu_shutdown", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_l,                     spawn,                    {.v = (char *[]){"mcontrol", "ylock", NULL}} },
+	// { MODKEY|ShiftMask,             21, /* equal */            spawn,                    {.v = (char *[]){"mcontrol", "xlock_enable", NULL}} },
+	// { MODKEY|ShiftMask,             20, /* minus */            spawn,                    {.v = (char *[]){"mcontrol", "xlock_disable", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_slash,                 spawn,                    {.v = (char *[]){"mcontrol", "do_not_disturbe", NULL}} },
+	{ WLR_MODIFIER_MOD5,	        Key_backslash,             spawn,                    {.v = (char *[]){"mcontrol", "kdeconnect_refresh", NULL}} },
+	{ WLR_MODIFIER_MOD5|WLR_MODIFIER_SHIFT, Key_backslash,     spawn,                    {.v = (char *[]){"mcontrol", "kdeconnect_kill", NULL}} },
+	{ 0,                            Key_XF86AudioLowerVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_add", "-0.05", "1.0", NULL}} },
+	{ 0,                            Key_XF86AudioRaiseVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_add", "+0.05", "1.0", NULL}} },
+	{ 0,                            Key_XF86AudioMute,         spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_toggle", NULL}} },
+	{ MODKEY,                       Key_XF86AudioLowerVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_add", "-0.05", "1.0", NULL}} },
+	{ MODKEY,                       Key_XF86AudioRaiseVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_add", "+0.05", "1.0", NULL}} },
+	{ MODKEY,                       Key_XF86AudioMute,         spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_toggle", NULL}} },
+	{ MODKEY,                       Key_F1,                    spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_toggle", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_s,                     spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_clipboard_selection", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL, Key_s,      spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_file_selection", NULL}} },
+	{ 0,                            Key_Print,                 spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_clipboard", NULL}} },
+	{ WLR_MODIFIER_SHIFT,           Key_Print,                 spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_file", NULL}} },
+	{ 0,                            Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev", NULL}} },
+	{ 0,                            Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause", NULL}} },
+	{ 0,                            Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next", NULL}} },
 };
 
 static const Button buttons[] = {
