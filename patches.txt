@@ -7,3 +7,4 @@ keycodes
 vanitygaps
 customfloat
 push
+pertag
