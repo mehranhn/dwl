@@ -56,11 +56,14 @@ static const struct xkb_rule_names xkb_rules = {
 	/* example:
 	.options = "ctrl:nocaps",
 	*/
-	.options = NULL,
+	.model = "pc104",
+	.layout = "us,ir,us",
+	.variant = "colemak,,",
+	.options = "caps:backspace,grp:alt_shift_toggle",
 };
 
-static const int repeat_rate = 25;
-static const int repeat_delay = 600;
+static const int repeat_rate = 30;
+static const int repeat_delay = 300;
 
 /* Trackpad */
 static const int tap_to_click = 1;

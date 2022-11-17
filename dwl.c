@@ -289,6 +289,10 @@ static void setcursor(struct wl_listener *listener, void *data);
 static void setfloating(Client *c, int floating);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(int oh, int ov, int ih, int iv);
+static void setkbrepeat(int repeat_rate, int repeat_delay);
+static void setkbrepeatarg(const Arg *args);
+static void setkbrules(const struct xkb_rule_names *newrule);
+static void setkbrulesarg(const Arg *args);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static void setmon(Client *c, Monitor *m, unsigned int newtags);
@@ -357,6 +361,10 @@ static struct wl_list mons;
 static Monitor *selmon;
 
 static int enablegaps = 1;   /* enables gaps, used by togglegaps */
+
+static struct xkb_rule_names *current_xkb_rules;
+static int current_repeat_rate;
+static int current_repeat_delay;
 
 /* global event handlers */
 static struct wl_listener cursor_axis = {.notify = axisnotify};
@@ -949,13 +957,13 @@ createkeyboard(struct wlr_input_device *device)
 
 	/* Prepare an XKB keymap and assign it to the keyboard. */
 	context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
-	keymap = xkb_keymap_new_from_names(context, &xkb_rules,
+	keymap = xkb_keymap_new_from_names(context, current_xkb_rules,
 		XKB_KEYMAP_COMPILE_NO_FLAGS);
 
 	wlr_keyboard_set_keymap(device->keyboard, keymap);
 	xkb_keymap_unref(keymap);
 	xkb_context_unref(context);
-	wlr_keyboard_set_repeat_info(device->keyboard, repeat_rate, repeat_delay);
+	wlr_keyboard_set_repeat_info(device->keyboard, current_repeat_rate, current_repeat_delay);
 
 	/* Here we set up listeners for keyboard events. */
 	LISTEN(&device->keyboard->events.modifiers, &kb->modifiers, keypressmod);
@@ -2186,6 +2194,50 @@ setgaps(int oh, int ov, int ih, int iv)
 }
 
 void
+setkbrepeat(const int repeat_rate, const int repeat_delay)
+{
+	Keyboard *kb;
+	current_repeat_rate = repeat_rate;
+	current_repeat_delay = repeat_delay;
+	wl_list_for_each(kb, &keyboards, link) {
+		wlr_keyboard_set_repeat_info(kb->device->keyboard, repeat_rate, repeat_delay);
+	}
+}
+
+void
+setkbrepeatarg(const Arg *args)
+{
+	int *rates = (int*)args->v;
+	setkbrepeat(rates[0], rates[1]);
+}
+
+void
+setkbrules(const struct xkb_rule_names *newrule)
+{
+	struct xkb_context *context;
+	struct xkb_keymap *keymap;
+	Keyboard *kb;
+
+	current_xkb_rules = (struct xkb_rule_names*)newrule;
+	/* Prepare an XKB keymap and assign it to the keyboard. */
+	context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+	keymap = xkb_map_new_from_names(context, newrule,
+			XKB_KEYMAP_COMPILE_NO_FLAGS);
+	wl_list_for_each(kb, &keyboards, link) {
+		wlr_keyboard_set_keymap(kb->device->keyboard, keymap);
+	}
+	xkb_keymap_unref(keymap);
+	xkb_context_unref(context);
+}
+
+void
+setkbrulesarg(const Arg *args)
+{
+	struct xkb_rule_names *newrule = (struct xkb_rule_names*)args->v;
+	setkbrules(newrule);
+}
+
+void
 setlayout(const Arg *arg)
 {
 	if (!selmon)
@@ -2276,6 +2328,11 @@ setup(void)
 	/* The Wayland display is managed by libwayland. It handles accepting
 	 * clients from the Unix socket, manging Wayland globals, and so on. */
 	dpy = wl_display_create();
+
+	/* Set up keyboard config */
+	current_xkb_rules = (struct xkb_rule_names*)&xkb_rules;
+	current_repeat_rate = repeat_rate;
+	current_repeat_delay = repeat_delay;
 
 	/* Set up signal handlers */
 	sigchld(0);
