@@ -3,3 +3,4 @@ alwayscenter
 attachbottom
 smartborders
 autostart
+keycodes
