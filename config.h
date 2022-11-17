@@ -195,37 +195,38 @@ static const char *const autostart[] = {
 
 /* commands */
 static const char *termcmd[] = { "footclient", NULL };
-static const char *menucmd[] = { "bemenu-run", NULL };
+// static const char *menucmd[] = { "bemenu-run", NULL };
 
 #include "keys.h"
 static const Key keys[] = {
 	/* modifier                                          key                          function                argument */
-	{ MODKEY,                                            Key_p,                       spawn,                  {.v = menucmd} },
-	{ WLR_MODIFIER_ALT,                                  Key_space,                   spawnnotgamemode,       {.v = menucmd} },
+	// { WLR_MODIFIER_ALT,                                  Key_space,                   spawnnotgamemode,       {.v = menucmd} },
 	{ MODKEY,                                            Key_q,                       spawn,                  {.v = termcmd} },
 	{ MODKEY,                                            Key_j,                       focusstack,             {.i = +1} },
 	{ MODKEY,                                            Key_k,                       focusstack,             {.i = -1} },
+	{ MODKEY,                                            Key_a,                       focusstack,             {.i = +1} },
+	{ MODKEY,                                            Key_s,                       focusstack,             {.i = -1} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_j,                       pushdown,               {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_k,                       pushup,                 {0} },
-	{ MODKEY,                                            Key_i,                       incnmaster,             {.i = +1} },
-	{ MODKEY,                                            Key_d,                       incnmaster,             {.i = -1} },
 	{ MODKEY,                                            Key_h,                       setmfact,               {.f = -0.05} },
 	{ MODKEY,                                            Key_l,                       setmfact,               {.f = +0.05} },
+	{ MODKEY,                                            Key_d,                       incnmaster,             {.i = +1} },
+	{ MODKEY,                                            Key_f,                       incnmaster,             {.i = -1} },
 	{ MODKEY,                                            Key_Return,                  zoom,                   {0} },
 	{ MODKEY,                                            Key_Tab,                     view,                   {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_c,                       killclient,             {0} },
 	{ MODKEY,                                            Key_t,                       setlayout,              {.v = &layouts[0]} },
-	{ MODKEY,                                            Key_f,                       setlayout,              {.v = &layouts[1]} },
-	{ MODKEY,                                            Key_m,                       setlayout,              {.v = &layouts[2]} },
-	{ MODKEY,                                            Key_space,                   setlayout,              {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_space,                   togglefloating,         {0} },
+	// { MODKEY,                                            Key_f,                       setlayout,              {.v = &layouts[1]} },
+	{ MODKEY,                                            Key_r,                       setlayout,              {.v = &layouts[2]} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_f,                       togglefloating,         {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_a,                       togglefloating,         {0} },
 	{ MODKEY,                                            Key_e,                       togglefullscreen,       {0} },
 	// { MODKEY,                                            Key_0,                       view,                   {.ui = ~0} },
 	// { MODKEY|WLR_MODIFIER_SHIFT,                         Key_0,                       tag,                    {.ui = ~0} },
-	{ MODKEY,                                            Key_comma,                   focusmon,               {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY,                                            Key_period,                  focusmon,               {.i = WLR_DIRECTION_RIGHT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_comma,                   tagmon,                 {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_period,                  tagmon,                 {.i = WLR_DIRECTION_RIGHT} },
+	// { MODKEY,                                            Key_comma,                   focusmon,               {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY,                                            Key_w,                       focusmon,               {.i = WLR_DIRECTION_RIGHT} },
+	// { MODKEY|WLR_MODIFIER_SHIFT,                         Key_comma,                   tagmon,                 {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_w,                       tagmon,                 {.i = WLR_DIRECTION_RIGHT} },
 	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_backslash,               togglegamemod,          {0} },
 	TAGKEYS(                                             Key_1,                       0),
 	TAGKEYS(                                             Key_2,                       1),
@@ -236,7 +237,7 @@ static const Key keys[] = {
 	TAGKEYS(                                             Key_7,                       6),
 	TAGKEYS(                                             Key_8,                       7),
 	TAGKEYS(                                             Key_9,                       8),
-	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_q,                       quit,                   {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_q,                       quit,                   {0} },
 
 	/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
 	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,                Key_BackSpace,               quit,                   {0} },
@@ -252,7 +253,7 @@ static const Key keys[] = {
     { MODKEY,                       Key_v,                     spawnorfocus,             {.v = "mcmus"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_v,                     spawnorfocus,             {.v = "mpv"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_m,                     spawnorfocus,             {.v = "nuclear"} },
-    { MODKEY|WLR_MODIFIER_SHIFT,    Key_p,                     spawnorfocus,             {.v = "lxtask"} },
+    { MODKEY|WLR_MODIFIER_SHIFT,    Key_p,                     spawnorfocus,             {.v = "mbtop"} },
     { MODKEY|WLR_MODIFIER_SHIFT,    Key_o,                     spawnorfocus,             {.v = "pavucontrol"} },
 	/* toggleprocs */
 	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
