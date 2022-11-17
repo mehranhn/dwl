@@ -1,4 +1,5 @@
 #define PATCHALWAYSCENTER 1
+#define PATCHATTACHBOTTOM 1
 
 /* appearance */
 static const int sloppyfocus        = 1;  /* focus follows mouse */
