@@ -1,3 +1,4 @@
 makedesktop
 alwayscenter
 attachbottom
+smartborders
