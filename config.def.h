@@ -1,3 +1,5 @@
+#define PATCHALWAYSCENTER 1
+
 /* appearance */
 static const int sloppyfocus        = 1;  /* focus follows mouse */
 static const unsigned int borderpx  = 1;  /* border pixel of windows */
