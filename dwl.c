@@ -612,13 +612,19 @@ applyrules(Client *c)
 			wl_list_for_each(m, &mons, link)
 				if (r->monitor == i++)
 					mon = m;
-			if (c->isfloating)
+			if (c->isfloating) {
+				int x, y, w, h;
+				w = r->w ? r->w : c->geom.width;
+				h = r->h ? r->h : c->geom.height;
+				x = r->x ? r->x + mon->w.x : (mon->w.width - w) / 2 + mon->w.x;
+				y = r->y ? r->y + mon->w.y : (mon->w.height - h) / 2 + mon->w.y;
 				resize(c, (struct wlr_box) {
-					.x = r->x ? r->x + mon->w.x : mon->w.width / 2 - c->geom.width / 2 + mon->w.x,
-					.y = r->y ? r->y + mon->w.y : mon->w.height / 2 - c->geom.height / 2 + mon->w.y,
-					.width = r->w ? r->w : c->geom.width,
-					.height = r->h ? r->h : c->geom.height,
+					.x = x,
+					.y = y,
+					.width = w,
+					.height = h,
 				}, 1, 1);
+			}
 		}
 	}
 	wlr_scene_node_reparent(c->scene, layers[c->isfloating ? LyrFloat : LyrTile]);
