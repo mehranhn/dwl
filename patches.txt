@@ -10,3 +10,4 @@ push
 pertag
 my setkeyboardconfig
 my gamemode
+my pertagconfig

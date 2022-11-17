@@ -18,9 +18,6 @@ static const float focuscolor[]     = {1.0, 0.0, 0.0, 1.0};
 /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
 static const float fullscreen_bg[]  = {0.1, 0.1, 0.1, 1.0};
 
-/* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-
 static const Rule rules[] = {
 	/* app_id     title       tags mask   isfloating    monitor x,y,w,h */
  	/* examples:
@@ -38,6 +35,20 @@ static const Layout layouts[] = {
 	{ "[]=",      tile },
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+};
+
+/* tagging */
+static const TagData tags[] = {
+	/* symbol   layout             mfact     nmaster */
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[2],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[2],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[0],       0.75f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
 };
 
 /* monitors */
