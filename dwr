@@ -6,15 +6,13 @@ for file in "/etc/profile" "$HOME/.profile" "/etc/yprofile" "$HOME/.yprofile"; d
 done
 
 eval "$(ssh-agent)"
+export XDG_CURRENT_DESKTOP=wlroots
 
-# Run all system xinitrc shell scripts
-# xinitdir="/etc/X11/xinit/xinitrc.d"
-# if [ -d "$xinitdir" ]; then
-#     for script in $xinitdir/*; do
-#         if [ -x "$script" -a ! -d "$script" ]; then
-#             . "$script"
-#         fi
-#     done
+# if command -v dbus-update-activation-environment >/dev/null; then
+#   dbus-update-activation-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=dwl
+# fi
+# if command -v systemctl >/dev/null; then
+#   systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=dwl
 # fi
 
 /usr/local/bin/dwl
