@@ -42,6 +42,9 @@ static const Layout layouts[] = {
 	{ "[M]",      monocle },
 };
 
+/* pointer constraints */
+static const int allow_constrain      = 1;
+
 /* tagging */
 static const TagData tags[] = {
 	/* symbol   layout             mfact     nmaster */
