@@ -30,7 +30,7 @@ static const Rule rules[] = {
 	* when width or height == 0 the default size of the client is used*/
 	{ "firefox",        "firefox",        NULL,       1 << 1,       0,           -1, 	    0,0,0,0,              {"firefox", NULL} },
 	{ "librewolf",      "librewolf",      NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"librewolf", NULL} },
-	{ "chromium",       "Chromium",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"chromium", "--ozone-platform-hint=auto", NULL} },
+	{ "chromium",       "chromium",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"chromium", "--ozone-platform-hint=auto", NULL} },
 	{ "freetube",       "FreeTube",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {NULL} },
 	{ "mranger",        "Mranger",        NULL,       1 << 2,       0,           -1,        50,50,500,500,        {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
 	{ "mlf",            "Mlf",            NULL,       1 << 2,       0,           -1,        50,50,500,500,        {"footclient", "-a", "Mlf", "-T", "lf", "-L", "lf", NULL} },
@@ -98,7 +98,7 @@ static const MonitorRule monrules[] = {
 	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, 0, 0, 0, 0, 120.000, 1, 0},
 	*/
 	/* defaults */
-	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, 0, 0, 0, 0, 0.0, 0, 0},
+	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, 0, 0, 0, 0, 60.0, 0, 0},
 };
 
 /* keyboard */
