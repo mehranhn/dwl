@@ -13,6 +13,5 @@ my gamemode
 my pertagconfig
 my improvedrules
 my toggleproc
-my dwr
 monitorconfig
 pointerConstraints
