@@ -1,8 +1,6 @@
 #define PATCHALWAYSCENTER 1
 #define PATCHATTACHBOTTOM 1
 
-#define SYSTEMD 1
-
 /* appearance */
 static const int sloppyfocus        = 1;  /* focus follows mouse */
 static const unsigned int borderpx  = 1;  /* border pixel of windows */
@@ -29,7 +27,7 @@ static const Rule rules[] = {
 	* When x or y == 0 the client is placed at the center of the screen,
 	* when width or height == 0 the default size of the client is used*/
 	{ "firefox",        "firefox",        NULL,       1 << 1,       0,           -1, 	    0,0,0,0,              {"firefox", NULL} },
-	{ "librewolf",      "librewolf",      NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"librewolf", NULL} },
+	{ "librewolf",      "LibreWolf",      NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"librewolf", NULL} },
 	{ "chromium",       "chromium",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {"chromium", "--ozone-platform-hint=auto", NULL} },
 	{ "freetube",       "FreeTube",       NULL,       1 << 1,       0,           -1,        50,50,500,500,        {NULL} },
 	{ "mranger",        "Mranger",        NULL,       1 << 2,       0,           -1,        50,50,500,500,        {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
@@ -120,7 +118,7 @@ static const struct xkb_rule_names xkb_rules_gamemod = {
 	.options = "caps:backspace",
 };
 
-static const int repeat_rate = 30;
+static const int repeat_rate = 25;
 static const int repeat_delay = 300;
 
 /* Trackpad */
@@ -162,17 +160,11 @@ static const double accel_speed = 0.0;
 
 /* Autostart */
 static const char *const autostart[] = {
-#if !SYSTEMD
-	"pipewire", NULL,
-	"pipewire-pulse", NULL,
-	"pipewire-media-session", NULL,
-	"/bin/sh", "-c", "sleep 1 && pipewire -c /home/mhn/.config/noice-suppression-for-voice/filter-chain.conf", NULL,
-#else
-#endif
 	"swayidle", NULL,
 	"lf", "-server", NULL,
-	"XDG_CURRENT_DESKTOP=wlroots /usr/lib/xdg-desktop-portal", "-r", NULL,
-	"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP=wlroots", NULL,
+	"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
+	"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
+	"/usr/lib/xdg-desktop-portal", "-r", NULL,
 	"dunst", "~/.config/dunst/dunstrc", NULL,
 	"swaybg", "-i", "/usr/share/backgrounds/wallpapers/wallpaper_7.jpg", "-m", "fill", "-o", "*", NULL,
 	"udiskie", NULL,
@@ -271,8 +263,6 @@ static const Key keys[] = {
 	// { MODKEY|ShiftMask,             21, /* equal */            spawn,                    {.v = (char *[]){"mcontrol", "xlock_enable", NULL}} },
 	// { MODKEY|ShiftMask,             20, /* minus */            spawn,                    {.v = (char *[]){"mcontrol", "xlock_disable", NULL}} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,    Key_slash,                 spawn,                    {.v = (char *[]){"mcontrol", "do_not_disturbe", NULL}} },
-	{ WLR_MODIFIER_MOD5,	        Key_backslash,             spawn,                    {.v = (char *[]){"mcontrol", "kdeconnect_refresh", NULL}} },
-	{ WLR_MODIFIER_MOD5|WLR_MODIFIER_SHIFT, Key_backslash,     spawn,                    {.v = (char *[]){"mcontrol", "kdeconnect_kill", NULL}} },
 	{ 0,                            Key_XF86AudioLowerVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_add", "-0.05", "1.0", NULL}} },
 	{ 0,                            Key_XF86AudioRaiseVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_add", "+0.05", "1.0", NULL}} },
 	{ 0,                            Key_XF86AudioMute,         spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_toggle", NULL}} },
@@ -287,6 +277,9 @@ static const Key keys[] = {
 	{ 0,                            Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev", NULL}} },
 	{ 0,                            Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause", NULL}} },
 	{ 0,                            Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next", NULL}} },
+	{ WLR_MODIFIER_SHIFT,           Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev_selective", NULL}} },
+	{ WLR_MODIFIER_SHIFT,           Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause_selective", NULL}} },
+	{ WLR_MODIFIER_SHIFT,           Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next_selective", NULL}} },
 };
 
 static const Button buttons[] = {
