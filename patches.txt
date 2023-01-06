@@ -8,3 +8,4 @@ vanitygaps
 customfloat
 push
 pertag
+monitorconfig
