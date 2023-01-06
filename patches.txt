@@ -10,3 +10,4 @@ push
 pertag
 monitorconfig
 pointerConstraints
+cursortheme
