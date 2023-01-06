@@ -4,3 +4,4 @@ attachbottom
 smartborders
 autostart
 keycodes
+vanitygaps

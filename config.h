@@ -5,7 +5,13 @@
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
 static const int smartborders              = 1;
+static const int smartgaps                 = 0;  /* 1 means no outer gap when there is only one window */
+static const int monoclegaps               = 0;  /* 1 means outer gaps in monocle layout */
 static const unsigned int borderpx         = 1;  /* border pixel of windows */
+static const unsigned int gappih           = 10; /* horiz inner gap between windows */
+static const unsigned int gappiv           = 10; /* vert inner gap between windows */
+static const unsigned int gappoh           = 10; /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov           = 10; /* vert outer gap between windows and screen edge */
 static const float rootcolor[]             = {0.3, 0.3, 0.3, 1.0};
 static const float bordercolor[]           = {0.5, 0.5, 0.5, 1.0};
 static const float focuscolor[]            = {1.0, 0.0, 0.0, 1.0};
@@ -128,6 +134,22 @@ static const Key keys[] = {
 	{ MODKEY,                    Key_d,       incnmaster,     {.i = -1} },
 	{ MODKEY,                    Key_h,       setmfact,       {.f = -0.05} },
 	{ MODKEY,                    Key_l,       setmfact,       {.f = +0.05} },
+	{ MODKEY|WLR_MODIFIER_LOGO,  Key_h,       incgaps,        {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,  Key_l,       incgaps,        {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   Key_h,      incogaps,      {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   Key_l,      incogaps,      {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_CTRL,    Key_h,      incigaps,      {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_CTRL,    Key_l,      incigaps,      {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,  Key_0,       togglegaps,     {0} },
+	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   Key_parenright,defaultgaps,{0} },
+	{ MODKEY,                    Key_o,       incihgaps,      {.i = -1 } },
+	{ MODKEY,                    Key_y,       incihgaps,      {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_CTRL,  Key_y,       incivgaps,      {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_CTRL,  Key_o,       incivgaps,      {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,  Key_y,       incohgaps,      {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_LOGO,  Key_o,       incohgaps,      {.i = -1 } },
+	{ MODKEY|WLR_MODIFIER_SHIFT, Key_y,       incovgaps,      {.i = +1 } },
+	{ MODKEY|WLR_MODIFIER_SHIFT, Key_o,       incovgaps,      {.i = -1 } },
 	{ MODKEY,                    Key_Return,  zoom,           {0} },
 	{ MODKEY,                    Key_Tab,     view,           {0} },
 	{ MODKEY|WLR_MODIFIER_SHIFT, Key_c,       killclient,     {0} },
