@@ -449,6 +449,11 @@ applyrules(Client *c)
 	if (!(title = client_get_title(c)))
 		title = broken;
 
+#if PATCHALWAYSCENTER
+	c->geom.x = (mon->w.width - c->geom.width) / 2 + mon->m.x;
+	c->geom.y = (mon->w.height - c->geom.height) / 2 + mon->m.y;
+#endif
+
 	for (r = rules; r < END(rules); r++) {
 		if ((!r->title || strstr(title, r->title))
 				&& (!r->id || strstr(appid, r->id))) {

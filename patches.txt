@@ -1,1 +1,2 @@
 makedesktop
+alwayscenter
