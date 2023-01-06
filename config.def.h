@@ -28,11 +28,15 @@ static const char *const autostart[] = {
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
 static const Rule rules[] = {
-	/* app_id     title       tags mask     isfloating   monitor */
+	/* app_id     title       tags mask     isfloating   monitor x  y  width heigh t*/
 	/* examples:
-	{ "Gimp",     NULL,       0,            1,           -1 },
+	{ "Gimp",     NULL,       0,            1,           -1, 	0, 	 0,   500, 400 },
+	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0 },
 	*/
-	{ "firefox",  NULL,       1 << 8,       0,           -1 },
+	/* x, y, width, heigh are floating only
+	* When x or y == 0 the client is placed at the center of the screen,
+	* when width or height == 0 the default size of the client is used*/
+	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0 },
 };
 
 /* layout(s) */

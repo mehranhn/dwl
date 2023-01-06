@@ -206,6 +206,10 @@ typedef struct {
 	unsigned int tags;
 	int isfloating;
 	int monitor;
+	int x;
+	int y;
+	int w;
+	int h;
 } Rule;
 
 typedef struct {
@@ -483,6 +487,19 @@ applyrules(Client *c)
 			wl_list_for_each(m, &mons, link)
 				if (r->monitor == i++)
 					mon = m;
+			if (c->isfloating) {
+				int x, y, w, h;
+				w = r->w ? r->w : c->geom.width;
+				h = r->h ? r->h : c->geom.height;
+				x = r->x ? r->x + mon->w.x : (mon->w.width - w) / 2 + mon->w.x;
+				y = r->y ? r->y + mon->w.y : (mon->w.height - h) / 2 + mon->w.y;
+				resize(c, (struct wlr_box) {
+					.x = x,
+					.y = y,
+					.width = w,
+					.height = h,
+				}, 1, 1);
+			}
 		}
 	}
 	wlr_scene_node_reparent(&c->scene->node, layers[c->isfloating ? LyrFloat : LyrTile]);
