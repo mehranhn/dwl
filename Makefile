@@ -13,6 +13,8 @@ PKGS      = wlroots wayland-server xkbcommon libinput $(XLIBS)
 DWLCFLAGS = `$(PKG_CONFIG) --cflags $(PKGS)` $(DWLCPPFLAGS) $(DWLDEVCFLAGS) $(CFLAGS)
 LDLIBS    = `$(PKG_CONFIG) --libs $(PKGS)` $(LIBS)
 
+DESKTOP?= /usr/share/wayland-sessions
+
 all: dwl
 dwl: dwl.o util.o
 	$(CC) dwl.o util.o $(LDLIBS) $(LDFLAGS) $(DWLCFLAGS) -o $@
@@ -52,8 +54,11 @@ install: dwl
 	mkdir -p $(DESTDIR)$(MANDIR)/man1
 	cp -f dwl.1 $(DESTDIR)$(MANDIR)/man1
 	chmod 644 $(DESTDIR)$(MANDIR)/man1/dwl.1
+	mkdir -p $(DESKTOP)
+	cp -f dwl.desktop $(DESKTOP)
+	chmod 644 $(DESKTOP)/dwl.desktop
 uninstall:
-	rm -f $(DESTDIR)$(PREFIX)/bin/dwl $(DESTDIR)$(MANDIR)/man1/dwl.1
+	rm -f $(DESTDIR)$(PREFIX)/bin/dwl $(DESTDIR)$(MANDIR)/man1/dwl.1 $(DESKTOP)/dwl.desktop
 
 .SUFFIXES: .c .o
 .c.o:
