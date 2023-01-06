@@ -1,2 +1,3 @@
 makedesktop
 alwayscenter
+attachbottom
