@@ -5,24 +5,39 @@
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
 static const int smartborders              = 1;
-static const int smartgaps                 = 0;  /* 1 means no outer gap when there is only one window */
+static const int smartgaps                 = 1;  /* 1 means no outer gap when there is only one window */
 static const int monoclegaps               = 0;  /* 1 means outer gaps in monocle layout */
 static const unsigned int borderpx         = 1;  /* border pixel of windows */
-static const unsigned int gappih           = 10; /* horiz inner gap between windows */
-static const unsigned int gappiv           = 10; /* vert inner gap between windows */
-static const unsigned int gappoh           = 10; /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov           = 10; /* vert outer gap between windows and screen edge */
+static const unsigned int gappih           = 9; /* horiz inner gap between windows */
+static const unsigned int gappiv           = 9; /* vert inner gap between windows */
+static const unsigned int gappoh           = 6; /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov           = 6; /* vert outer gap between windows and screen edge */
 static const float rootcolor[]             = {0.3, 0.3, 0.3, 1.0};
 static const float bordercolor[]           = {0.5, 0.5, 0.5, 1.0};
 static const float focuscolor[]            = {1.0, 0.0, 0.0, 1.0};
 static const char *cursortheme             = NULL; /* theme from /usr/share/cursors/xorg-x11 */
 static const unsigned int cursorsize       = 24;
 /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
-static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 1.0};
+static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 0.0};
 
 /* autostart */
 static const char *const autostart[] = {
-	"wbg", "/path/to/your/image", NULL,
+	"swayidle", NULL,
+	"lf", "-server", NULL,
+	"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
+	"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
+	"/usr/lib/xdg-desktop-portal", "-r", NULL,
+	"dunst", "~/.config/dunst/dunstrc", NULL,
+	"swaybg", "-i", "/usr/share/backgrounds/wallpapers/wallpaper_7.jpg", "-m", "fill", "-o", "*", NULL,
+	"udiskie", NULL,
+	// "kdeconnect-cli", "--refresh", NULL,
+	// "lxqt-policykit-agent", NULL,
+	"/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL,
+	"foot", "--server", NULL,
+	// "nm-applet", NULL,
+	// "blueman-applet", NULL,
+	// "asusctl", "profile", "-P", "Quiet", NULL,
+	"import-gsettings", NULL,
 	NULL /* terminate */
 };
 
@@ -30,15 +45,40 @@ static const char *const autostart[] = {
 static const int allow_constrain      = 1;
 
 static const Rule rules[] = {
-	/* id         app_id     title       tags mask     isfloating   monitor x  y  width heigh t*/
-	/* examples:
-	{ "Gimp",     NULL,       0,            1,           -1, 	0, 	 0,   500, 400 },
-	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0 },
-	*/
 	/* x, y, width, heigh are floating only
 	* When x or y == 0 the client is placed at the center of the screen,
 	* when width or height == 0 the default size of the client is used*/
-	{ "firefox", "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0,     {"firefox", NULL} },
+	/* id                app_id                                     title       tags          isfloating   monitor    x,y,w,h               cmd */
+	{ "firefox",        "firefox",                                  NULL,       1 << 1,       0,           -1, 	      1111,1111,1111,1111,  {"firefox", NULL} },
+	{ "librewolf",      "LibreWolf",                                NULL,       1 << 1,       0,           -1,        50,  50,  500, 500,   {"librewolf", NULL} },
+	{ "chromium",       "chromium",                                 NULL,       1 << 1,       0,           -1,        50,  50,  500, 500,   {"chromium", "--ozone-platform-hint=auto", NULL} },
+	{ "freetube",       "FreeTube",                                 NULL,       1 << 1,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "mranger",        "Mranger",                                  NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
+	{ "mlf",            "Mlf",                                      NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {"footclient", "-a", "Mlf", "-T", "lf", "-L", "lf", NULL} },
+	{ "mpv",            "mpv",                                      NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "nuclear",        "nuclear",                                  NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {"flatpak", "run", "org.js.nuclear.Nuclear", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "code-oss",       "code-oss",                                 NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"code", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "vscodium",       "VSCodium",                                 NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"vscodium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "mnvim",          "Mnvim",                                    NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"footclient", "-a", "Mnvim", "-T", "Neovim", "-L", "tmux", "new", "-s", "nvim", "-n", "nvim", "-AD", "nvim", NULL} },
+	{ "neovide",        "neovide",                                  NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"neovide", NULL} },
+	{ "neovide-mg",     "neovide",                                  NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"neovide", "--multigrid", NULL} },
+	{ "insomnia",       "Insomnia",                                 NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"insomnia", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "virt-manager",   "Virt-manager",                             NULL,       1 << 4,       0,           -1,        50,  50,  500, 500,   {"virt-manager", NULL} },
+	{ "dota2",          "dota2",                                    NULL,       1 << 4,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "wowclassic.exe", "wowclassic.exe",                           NULL,       1 << 4,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "discord",        "discord",                                  NULL,       1 << 5,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "jellyfin",       "org.jellyfin.jellyfinmediaplayer",         NULL,       1 << 5,       0,           -1,        50,  50,  500, 500,   {"flatpak", "run", "com.github.iwalton3.jellyfin-media-player", NULL} },
+	{ "ferdium",        "ferdium",                                  NULL,       1 << 5,       0,           -1,        50,  50,  500, 500,   {"ferdium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "lutris",         "Lutris",                                   NULL,       1 << 6,       0,           -1,        50,  50,  500, 500,   {"lutris", NULL} },
+	{ "steam",          "Steam",                                    NULL,       1 << 6,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "gimp",           "Gimp",                                     NULL,       1 << 7,       0,           -1,        50,  50,  500, 500,   {"gimp", NULL} },
+	{ "krita",          "krita",                                    NULL,       1 << 7,       0,           -1,        50,  50,  500, 500,   {"krita", NULL} },
+	{ "obs",            "obs",                                      NULL,       1 << 7,       0,           -1,        50,  50,  500, 500,   {"obs", NULL} },
+	{ "qbittorrent",    "qBittorrent",                              NULL,       1 << 8,       0,           -1,        50,  50,  500, 500,   {"qbittorrent", NULL} },
+	{ "mcmus",          "Mcmus",                                    NULL,       0,            1,           -1,        0,   0,   1820,991,   {"footclient", "-a", "Mcmus", "-T", "cmus", "-L", "cmus", NULL} },
+	{ "mbtop",          "Mbtop",                                    NULL,       0,            1,           -1,        0,   0,   1820,991,   {"footclient", "-a", "Mbtop", "-T", "btop", "-L", "btop", "-p", "0", NULL} },
+	{ "mpacmixer",      "Mpacmixer",                                NULL,       0,            1,           -1,        1413,473, 500, 600,   {"footclient", "-a", "Mpacmixer", "-T", "pacmixer", "-L", "pacmixer",  NULL} },
+	{ "pavucontrol",    "pavucontrol",                              NULL,       0,            1,           -1,        1413,473, 500, 600,   {"pavucontrol", "-t", "4", NULL} },
 };
 
 static ToggleProc toggleprocs[] = {
@@ -57,16 +97,16 @@ static const Layout layouts[] = {
 /* tagging */
 static const TagData tags[] = {
 	/* symbol   layout             mfact     nmaster */
-    { "1",      &layouts[0],       0.55f,    1, },
-    { "2",      &layouts[2],       0.55f,    1, },
-    { "3",      &layouts[0],       0.55f,    1, },
-    { "4",      &layouts[2],       0.55f,    1, },
-    { "5",      &layouts[0],       0.55f,    1, },
-    { "6",      &layouts[2],       0.55f,    1, },
-    { "7",      &layouts[0],       0.75f,    1, },
-    { "8",      &layouts[0],       0.55f,    1, },
-    { "9",      &layouts[0],       0.55f,    1, },
-    { "0",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[2],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[2],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[2],       0.55f,    1, },
+    { "",      &layouts[0],       0.75f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
+    { "",      &layouts[0],       0.55f,    1, },
 };
 
 /* monitors */
@@ -85,15 +125,21 @@ static const struct xkb_rule_names xkb_rules = {
 	/* example:
 	.options = "ctrl:nocaps",
 	*/
-	.options = NULL,
+	.model = "pc104",
+	.layout = "us,ir,us",
+	.variant = "colemak,,",
+	.options = "caps:backspace,grp:alt_shift_toggle",
 };
 
 static const struct xkb_rule_names xkb_rules_gamemod = {
-	.options = NULL,
+	.model = "pc104",
+	.layout = "us",
+	.variant = "colemak",
+	.options = "caps:backspace",
 };
 
 static const int repeat_rate = 25;
-static const int repeat_delay = 600;
+static const int repeat_delay = 300;
 
 /* Trackpad */
 static const int tap_to_click = 1;
@@ -138,74 +184,63 @@ LIBINPUT_CONFIG_TAP_MAP_LMR -- 1/2/3 finger tap maps to left/middle/right
 static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TAP_MAP_LRM;
 
 /* If you want to use the windows key for MODKEY, use WLR_MODIFIER_LOGO */
-#define MODKEY WLR_MODIFIER_ALT
+#define MODKEY WLR_MODIFIER_LOGO
 
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_SHIFT, KEY,            tag,             {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,KEY,toggletag,  {.ui = 1 << TAG} }
+	{ MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }
+	// { MODKEY|WLR_MODIFIER_SHIFT, KEY,            tag,             {.ui = 1 << TAG} }, \
+	// { MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,KEY,toggletag,  {.ui = 1 << TAG} }
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *termcmd[] = { "foot", NULL };
-static const char *menucmd[] = { "bemenu-run", NULL };
+static const char *termcmd[] = { "footclient", NULL };
+// static const char *menucmd[] = { "bemenu-run", NULL };
 
 #include "keys.h"
 static const Key keys[] = {
-	/* modifier                  key          function        argument */
-	{ MODKEY,                    Key_p,       spawnnotgamemode,{.v = menucmd} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_Return,  spawn,          {.v = termcmd} },
-	{ MODKEY,                    Key_j,       focusstack,     {.i = +1} },
-	{ MODKEY,                    Key_k,       focusstack,     {.i = -1} },
-	{ MODKEY,                    Key_i,       incnmaster,     {.i = +1} },
-	{ MODKEY,                    Key_d,       incnmaster,     {.i = -1} },
-	{ MODKEY,                    Key_h,       setmfact,       {.f = -0.05} },
-	{ MODKEY,                    Key_l,       setmfact,       {.f = +0.05} },
-	{ MODKEY|WLR_MODIFIER_LOGO,  Key_h,       incgaps,        {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO,  Key_l,       incgaps,        {.i = -1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   Key_h,      incogaps,      {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   Key_l,      incogaps,      {.i = -1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_CTRL,    Key_h,      incigaps,      {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_CTRL,    Key_l,      incigaps,      {.i = -1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO,  Key_0,       togglegaps,     {0} },
-	{ MODKEY|WLR_MODIFIER_LOGO|WLR_MODIFIER_SHIFT,   Key_parenright,defaultgaps,{0} },
-	{ MODKEY,                    Key_o,       incihgaps,      {.i = -1 } },
-	{ MODKEY,                    Key_y,       incihgaps,      {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_CTRL,  Key_y,       incivgaps,      {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_CTRL,  Key_o,       incivgaps,      {.i = -1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO,  Key_y,       incohgaps,      {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_LOGO,  Key_o,       incohgaps,      {.i = -1 } },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_y,       incovgaps,      {.i = +1 } },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_o,       incovgaps,      {.i = -1 } },
-	{ MODKEY,                    Key_Return,  zoom,           {0} },
-	{ MODKEY,                    Key_Tab,     view,           {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_c,       killclient,     {0} },
-	{ MODKEY,                    Key_t,       setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                    Key_f,       setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                    Key_m,       setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                    Key_space,   setlayout,      {0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_space,   togglefloating, {0} },
-	{ MODKEY,                    Key_e,       togglefullscreen, {0} },
-	{ MODKEY,                    Key_0,       view,           {.ui = ~0} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_0,       tag,            {.ui = ~0} },
-	{ MODKEY,                    Key_comma,   focusmon,       {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY,                    Key_period,  focusmon,       {.i = WLR_DIRECTION_RIGHT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_comma,   tagmon,         {.i = WLR_DIRECTION_LEFT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_period,  tagmon,         {.i = WLR_DIRECTION_RIGHT} },
-	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,Key_backslash,togglegamemod,{0} },
-	TAGKEYS(                     Key_1,                       0),
-	TAGKEYS(                     Key_2,                       1),
-	TAGKEYS(                     Key_3,                       2),
-	TAGKEYS(                     Key_4,                       3),
-	TAGKEYS(                     Key_5,                       4),
-	TAGKEYS(                     Key_6,                       5),
-	TAGKEYS(                     Key_7,                       6),
-	TAGKEYS(                     Key_8,                       7),
-	TAGKEYS(                     Key_9,                       8),
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_q,       quit,           {0} },
+	/* modifier                                          key                          function                argument */
+	// { WLR_MODIFIER_ALT,                                  Key_space,                   spawnnotgamemode,       {.v = menucmd} },
+	{ MODKEY,                                            Key_q,                       spawn,                  {.v = termcmd} },
+	{ MODKEY,                                            Key_j,                       focusstack,             {.i = +1} },
+	{ MODKEY,                                            Key_k,                       focusstack,             {.i = -1} },
+	{ MODKEY,                                            Key_a,                       focusstack,             {.i = +1} },
+	{ MODKEY,                                            Key_s,                       focusstack,             {.i = -1} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_j,                       pushdown,               {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_k,                       pushup,                 {0} },
+	{ MODKEY,                                            Key_h,                       setmfact,               {.f = -0.05} },
+	{ MODKEY,                                            Key_l,                       setmfact,               {.f = +0.05} },
+	{ MODKEY,                                            Key_d,                       incnmaster,             {.i = +1} },
+	{ MODKEY,                                            Key_f,                       incnmaster,             {.i = -1} },
+	{ MODKEY,                                            Key_Return,                  zoom,                   {0} },
+	{ MODKEY,                                            Key_Tab,                     view,                   {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_c,                       killclient,             {0} },
+	{ MODKEY,                                            Key_t,                       setlayout,              {.v = &layouts[0]} },
+	// { MODKEY,                                            Key_f,                       setlayout,              {.v = &layouts[1]} },
+	{ MODKEY,                                            Key_r,                       setlayout,              {.v = &layouts[2]} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_f,                       togglefloating,         {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_a,                       togglefloating,         {0} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_e,                       togglefullscreen,       {0} },
+	// { MODKEY,                                            Key_0,                       view,                   {.ui = ~0} },
+	// { MODKEY|WLR_MODIFIER_SHIFT,                         Key_0,                       tag,                    {.ui = ~0} },
+	// { MODKEY,                                            Key_comma,                   focusmon,               {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY,                                            Key_w,                       focusmon,               {.i = WLR_DIRECTION_RIGHT} },
+	// { MODKEY|WLR_MODIFIER_SHIFT,                         Key_comma,                   tagmon,                 {.i = WLR_DIRECTION_LEFT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_w,                       tagmon,                 {.i = WLR_DIRECTION_RIGHT} },
+	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_backslash,               togglegamemod,          {0} },
+	TAGKEYS(                                             Key_1,                       0),
+	TAGKEYS(                                             Key_2,                       1),
+	TAGKEYS(                                             Key_3,                       2),
+	TAGKEYS(                                             Key_4,                       3),
+	TAGKEYS(                                             Key_5,                       4),
+	TAGKEYS(                                             Key_6,                       5),
+	TAGKEYS(                                             Key_7,                       6),
+	TAGKEYS(                                             Key_8,                       7),
+	TAGKEYS(                                             Key_9,                       8),
+	TAGKEYS(                                             Key_0,                       9),
+	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_q,                       quit,                   {0} },
 
 	/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
 	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,Key_BackSpace, quit, {0} },
@@ -214,10 +249,43 @@ static const Key keys[] = {
 	CHVT(Key_F5, 5), CHVT(Key_F6,  6),  CHVT(Key_F7,  7),  CHVT(Key_F8,  8),
 	CHVT(Key_F9, 9), CHVT(Key_F10, 10), CHVT(Key_F11, 11), CHVT(Key_F12, 12),
 	/* window rules */
-	{ MODKEY,                    Key_b,       spawnorfocus,   {.v = "firefox"} },
-
-	/* toggle procs */
-	{ MODKEY|WLR_MODIFIER_SHIFT, Key_bracketright,toggleproccmd,{.v = "gammastep"} },
+	{ MODKEY,                                            Key_b,                     spawnorfocus,             {.v = "librewolf"} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_b,                     spawnorfocus,             {.v = "chromium"} },
+	{ MODKEY,                                            Key_e,                     spawnorfocus,             {.v = "mlf"} },
+	{ MODKEY,                                            Key_c,                     spawnorfocus,             {.v = "mnvim"} },
+	{ MODKEY,                                            Key_v,                     spawnorfocus,             {.v = "mcmus"} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_v,                     spawnorfocus,             {.v = "mpv"} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_m,                     spawnorfocus,             {.v = "nuclear"} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_p,                     spawnorfocus,             {.v = "mbtop"} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_o,                     spawnorfocus,             {.v = "pavucontrol"} },
+	/* toggleprocs */
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
+	/* general tasks */
+	{ MODKEY|WLR_MODIFIER_ALT,                           Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_y", NULL}} },
+	{ WLR_MODIFIER_CTRL,                                 Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_path", NULL}} },
+	{ WLR_MODIFIER_ALT,                                  Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_desktop", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_q,                     spawn,                    {.v = (char *[]){"mcontrol", "menu_shutdown", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_l,                     spawn,                    {.v = (char *[]){"mcontrol", "ylock", NULL}} },
+	// { MODKEY|ShiftMask,                                  21, /* equal */            spawn,                    {.v = (char *[]){"mcontrol", "xlock_enable", NULL}} },
+	// { MODKEY|ShiftMask,                                  20, /* minus */            spawn,                    {.v = (char *[]){"mcontrol", "xlock_disable", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_slash,                 spawn,                    {.v = (char *[]){"mcontrol", "do_not_disturbe", NULL}} },
+	{ 0,                                                 Key_XF86AudioLowerVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_add", "-0.05", "1.0", NULL}} },
+	{ 0,                                                 Key_XF86AudioRaiseVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_add", "+0.05", "1.0", NULL}} },
+	{ 0,                                                 Key_XF86AudioMute,         spawn,                    {.v = (char *[]){"mcontrol", "pa_vol_toggle", NULL}} },
+	{ MODKEY,                                            Key_XF86AudioLowerVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_add", "-0.05", "1.0", NULL}} },
+	{ MODKEY,                                            Key_XF86AudioRaiseVolume,  spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_add", "+0.05", "1.0", NULL}} },
+	{ MODKEY,                                            Key_XF86AudioMute,         spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_toggle", NULL}} },
+	{ MODKEY,                                            Key_F1,                    spawn,                    {.v = (char *[]){"mcontrol", "pa_mic_toggle", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_s,                     spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_clipboard_selection", NULL}} },
+	{ MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_s,                     spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_file_selection", NULL}} },
+	{ 0,                                                 Key_Print,                 spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_clipboard", NULL}} },
+	{ WLR_MODIFIER_SHIFT,                                Key_Print,                 spawn,                    {.v = (char *[]){"mcontrol", "yscreenshot_file", NULL}} },
+	{ 0,                                                 Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev", NULL}} },
+	{ 0,                                                 Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause", NULL}} },
+	{ 0,                                                 Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next", NULL}} },
+	{ WLR_MODIFIER_SHIFT,                                Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev_selective", NULL}} },
+	{ WLR_MODIFIER_SHIFT,                                Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause_selective", NULL}} },
+	{ WLR_MODIFIER_SHIFT,                                Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next_selective", NULL}} },
 };
 
 static const Button buttons[] = {
