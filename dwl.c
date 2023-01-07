@@ -97,6 +97,17 @@ typedef struct {
 	const Arg arg;
 } Button;
 
+typedef struct {
+	const char *identifier;
+	const int autostart;
+	const int signal;
+	const char *notificationid;
+	const char *notificationtitle;
+	const char *notificationicon;
+    const char *cmd[32];
+	pid_t pid;
+} ToggleProc;
+
 typedef struct Pertag Pertag;
 typedef struct Monitor Monitor;
 typedef struct {
@@ -251,6 +262,7 @@ static void arrangelayer(Monitor *m, struct wl_list *list,
 		struct wlr_box *usable_area, int exclusive);
 static void arrangelayers(Monitor *m);
 static void autostartexec(void);
+static void autostarttoggleprocs(void);
 static void axisnotify(struct wl_listener *listener, void *data);
 static void buttonpress(struct wl_listener *listener, void *data);
 static void chvt(const Arg *arg);
@@ -351,6 +363,8 @@ static void togglefloating(const Arg *arg);
 static void togglefullscreen(const Arg *arg);
 static void togglegaps(const Arg *arg);
 static void togglegamemod(const Arg *arg);
+static void toggleproc(const char *id);
+static void toggleproccmd(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unlocksession(struct wl_listener *listener, void *data);
@@ -661,6 +675,24 @@ autostartexec(void) {
 		}
 		/* skip arguments */
 		while (*++p);
+	}
+}
+
+void
+autostarttoggleprocs(void) {
+	for (int i = 0; i < LENGTH(toggleprocs); i++) {
+		if (toggleprocs[i].autostart) {
+			pid_t pid = fork();
+			if (pid == -1)
+				continue;
+			if (pid == 0) {
+				setsid();
+				execvp(toggleprocs[i].cmd[0], (char *const *) toggleprocs[0].cmd);
+				die("dwl: execvp %s:", toggleprocs[i].cmd[0]);
+			} else {
+				toggleprocs[i].pid = pid;
+			}
+		}
 	}
 }
 
@@ -2111,6 +2143,14 @@ quit(const Arg *arg)
 		}
 	}
 
+	for (i = 0; i < LENGTH(toggleprocs); i++) {
+		if (0 < toggleprocs[i].pid) {
+			kill(toggleprocs[i].pid, toggleprocs[i].signal);
+			waitpid(toggleprocs[i].pid, NULL, 0);
+			toggleprocs[i].pid = 0;
+		}
+	}
+
 	wl_display_terminate(dpy);
 }
 
@@ -2195,6 +2235,7 @@ run(char *startup_cmd)
 
 	/* Now that the socket exists and the backend is started, run the startup command */
 	autostartexec();
+	autostarttoggleprocs();
 	if (startup_cmd) {
 		int piperw[2];
 		if (pipe(piperw) < 0)
@@ -2879,6 +2920,51 @@ void
 togglegamemod(const Arg *arg)
 {
 	setgamemod(!is_game_mode_on);
+}
+
+void
+toggleproc(const char *id) {
+	ToggleProc *p = NULL;
+	for (int i = 0; i < LENGTH(toggleprocs); i++) {
+		if (!strcmp(toggleprocs[i].identifier, id)) {
+			p = &toggleprocs[i];
+			break;
+		}
+	}
+	if (!p)
+		return;
+
+	if (p->pid != 0) {
+		const char *args[] = {"dunstify", "-r", p->notificationid, "-a", "dwl", "-u", "low", "-i", p->notificationicon, p->notificationtitle, "Off", NULL};
+		kill(p->pid, p->signal);
+		// waitpid(toggleprocs[i].pid, NULL, 0);
+		p->pid = 0;
+		if (p->notificationid && p->notificationicon && p->notificationtitle)
+			spawnutil((char**) args);
+	} else {
+		pid_t pid = fork();
+		if (pid == -1)
+			return;
+		if (pid == 0) {
+			setsid();
+			execvp(p->cmd[0], (char *const *) p->cmd);
+			fprintf(stderr, "dwl: execvp %s\n", p->cmd[0]);
+			perror(" failed");
+			_exit(EXIT_FAILURE);
+		} else {
+			const char *args[] = {"dunstify", "-r", p->notificationid, "-a", "dwl", "-u", "low", "-i", p->notificationicon, p->notificationtitle, "On", NULL};
+			p->pid = pid;
+			if (p->notificationid && p->notificationicon && p->notificationtitle)
+				spawnutil((char**) args);
+		}
+	}
+
+}
+
+void
+toggleproccmd(const Arg *arg)
+{
+	toggleproc((const char*) arg->v);
 }
 
 void

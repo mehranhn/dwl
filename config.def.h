@@ -41,6 +41,11 @@ static const Rule rules[] = {
 	{ "firefox", "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0,     {"firefox", NULL} },
 };
 
+static ToggleProc toggleprocs[] = {
+	/* id               autosatrt   signal       notification ID  notification title     notification icon    cmd           not my real location                      0 */
+	{ "gammastep",      1,          SIGTERM,     "8001",          "Blue Light Filter",   "eye-solid",         {"gammastep", "-l", "36.51212:51.1251775", "-r", NULL}, 0},
+};
+
 /* layout(s) */
 static const Layout layouts[] = {
 	/* symbol     arrange function */
@@ -210,6 +215,9 @@ static const Key keys[] = {
 	CHVT(Key_F9, 9), CHVT(Key_F10, 10), CHVT(Key_F11, 11), CHVT(Key_F12, 12),
 	/* window rules */
 	{ MODKEY,                    Key_b,       spawnorfocus,   {.v = "firefox"} },
+
+	/* toggle procs */
+	{ MODKEY|WLR_MODIFIER_SHIFT, Key_bracketright,toggleproccmd,{.v = "gammastep"} },
 };
 
 static const Button buttons[] = {
