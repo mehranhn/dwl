@@ -14,3 +14,4 @@ cursortheme
 my setkeyboardconfig
 my gamemode
 my pertagconfig
+my improvedrules

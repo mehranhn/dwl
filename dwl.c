@@ -228,6 +228,7 @@ struct pointer_constraint {
 
 
 typedef struct {
+	const char *identifier;
 	const char *id;
 	const char *title;
 	unsigned int tags;
@@ -237,6 +238,7 @@ typedef struct {
 	int y;
 	int w;
 	int h;
+	const char *cmd[32];
 } Rule;
 
 typedef struct {
@@ -347,6 +349,7 @@ static void setup(void);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void spawnnotgamemode(const Arg *arg);
+static void spawnorfocus(const Arg *arg);
 static void spawnutil(char** args);
 static void startdrag(struct wl_listener *listener, void *data);
 static void tag(const Arg *arg);
@@ -2740,6 +2743,81 @@ spawnnotgamemode(const Arg *arg)
 {
 	if (!is_game_mode_on)
 		spawnutil((char **)arg->v);
+}
+
+void
+spawnorfocus(const Arg *arg)
+{
+	const char *name;
+	const Rule *r = NULL;
+	char found = 0;
+	Client *c = NULL;
+
+	name = ((char*)arg->v);
+	for (r = rules; r < END(rules); r++) {
+		if (!strcmp(name, r->identifier)) {
+			break;
+		}
+	}
+	if (!r)
+		return;
+	wl_list_for_each(c, &clients, link) {
+		const char *appid, *title;
+
+		if (!(appid = client_get_appid(c)))
+			appid = broken;
+		if (!(title = client_get_title(c)))
+			title = broken;
+
+		if (!r->title && !r->id)
+			continue;
+		if ((!r->title || strstr(title, r->title))
+				&& (!r->id || strstr(appid, r->id))) {
+			found = true;
+			break;
+		}
+	}
+	if (found) {
+		if (c->isfloating && !c->isfullscreen) {
+			if (selmon != c->mon) {
+				setmon(c, selmon, 0);
+				focusclient(c, 1);
+				arrange(selmon);
+			} else {
+				if (VISIBLEON(c, selmon)) {
+					c->tags = 0;
+					focusclient(focustop(selmon), 1);
+					arrange(selmon);
+				} else {
+					if (selmon->tagset[c->mon->seltags] & TAGMASK) {
+						c->tags = selmon->tagset[c->mon->seltags] & TAGMASK;
+						focusclient(c, 1);
+						arrange(selmon);
+					}
+				}
+			}
+		} else {
+			if (!VISIBLEON(c, c->mon)) {
+				Arg a = { .ui = c->tags };
+				view(&a);
+			}
+			focusclient(c, 1);
+		}
+	} else {
+		int i = 0;
+		Monitor *m;
+		if (r->monitor < 0) {
+			wl_list_for_each(m, &mons, link)
+				if (r->monitor == i++ && m->wlr_output->enabled) {
+					focusclient(focustop(m), 1);
+				}
+		}
+		if (r->tags) {
+			Arg a = { .ui = r->tags };
+			view(&a);
+		}
+		spawnutil((char**)r->cmd);
+	}
 }
 
 void

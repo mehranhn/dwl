@@ -30,7 +30,7 @@ static const char *const autostart[] = {
 static const int allow_constrain      = 1;
 
 static const Rule rules[] = {
-	/* app_id     title       tags mask     isfloating   monitor x  y  width heigh t*/
+	/* id         app_id     title       tags mask     isfloating   monitor x  y  width heigh t*/
 	/* examples:
 	{ "Gimp",     NULL,       0,            1,           -1, 	0, 	 0,   500, 400 },
 	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0 },
@@ -38,7 +38,7 @@ static const Rule rules[] = {
 	/* x, y, width, heigh are floating only
 	* When x or y == 0 the client is placed at the center of the screen,
 	* when width or height == 0 the default size of the client is used*/
-	{ "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0 },
+	{ "firefox", "firefox",  NULL,       1 << 8,       0,           -1, 	200, 100, 0,   0,     {"firefox", NULL} },
 };
 
 /* layout(s) */
@@ -210,6 +210,8 @@ static const Key keys[] = {
 	CHVT(Key_F1, 1), CHVT(Key_F2,  2),  CHVT(Key_F3,  3),  CHVT(Key_F4,  4),
 	CHVT(Key_F5, 5), CHVT(Key_F6,  6),  CHVT(Key_F7,  7),  CHVT(Key_F8,  8),
 	CHVT(Key_F9, 9), CHVT(Key_F10, 10), CHVT(Key_F11, 11), CHVT(Key_F12, 12),
+	/* window rules */
+	{ MODKEY,                    Key_b,       spawnorfocus,   {.v = "firefox"} },
 };
 
 static const Button buttons[] = {
