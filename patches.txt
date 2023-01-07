@@ -12,3 +12,4 @@ monitorconfig
 pointerConstraints
 cursortheme
 my setkeyboardconfig
+my gamemode
