@@ -11,3 +11,4 @@ pertag
 monitorconfig
 pointerConstraints
 cursortheme
+my setkeyboardconfig
