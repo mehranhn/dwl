@@ -64,16 +64,14 @@ static const TagData tags[] = {
     { "0",      &layouts[0],       0.55f,    1, },
 };
 
-/* monitors
- * The order in which monitors are defined determines their position.
- * Non-configured monitors are always added to the left. */
+/* monitors */
 static const MonitorRule monrules[] = {
-	/* name       mfact nmaster scale layout       rotate/reflect x y resx resy rate adaptive custom*/
-	/* example of a HiDPI laptop monitor at 120Hz:
-	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, 0, 0, 0, 0, 120.000, 1, 0},
+	/* name       mfact nmaster scale layout       rotate/reflect */
+	/* example of a HiDPI laptop monitor:
+	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 	*/
 	/* defaults */
-	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL, 0, 0, 0, 0, 0, 1, 0},
+	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 };
 
 /* keyboard */

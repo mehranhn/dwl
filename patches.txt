@@ -8,7 +8,6 @@ vanitygaps
 customfloat
 push
 pertag
-monitorconfig
 pointerConstraints
 cursortheme
 my setkeyboardconfig
