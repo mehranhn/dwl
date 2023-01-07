@@ -171,6 +171,13 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
+typedef struct {
+    const char *symbol;
+    const Layout *layout;
+    float mfacts;
+    int nmasters;
+} TagData;
+
 struct Monitor {
 	struct wl_list link;
 	struct wlr_output *wlr_output;
@@ -1111,12 +1118,17 @@ createmon(struct wl_listener *listener, void *data)
 	m->pertag->curtag = m->pertag->prevtag = 1;
 
 	for (i = 0; i <= LENGTH(tags); i++) {
-		m->pertag->nmasters[i] = m->nmaster;
-		m->pertag->mfacts[i] = m->mfact;
-
-		m->pertag->ltidxs[i][0] = m->lt[0];
-		m->pertag->ltidxs[i][1] = m->lt[1];
+		if (i != 0) {
+			m->pertag->nmasters[i] = tags[i - 1].nmasters;
+			m->pertag->mfacts[i] = tags[i - 1].mfacts;
+			m->pertag->ltidxs[i][0] = tags[i - 1].layout;
+		} else {
+			m->pertag->nmasters[i] = m->nmaster;
+			m->pertag->mfacts[i] = m->mfact;
+			m->pertag->ltidxs[i][0] = m->lt[0];
+		}
 		m->pertag->sellts[i] = m->sellt;
+		m->pertag->ltidxs[i][1] = m->lt[1];
 	}
 
 	/* The xdg-protocol specifies:

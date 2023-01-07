@@ -13,3 +13,4 @@ pointerConstraints
 cursortheme
 my setkeyboardconfig
 my gamemode
+my pertagconfig
