@@ -49,34 +49,34 @@ static const Rule rules[] = {
 	* When x or y == 0 the client is placed at the center of the screen,
 	* when width or height == 0 the default size of the client is used*/
 	/* id                app_id                                     title       tags          isfloating   monitor    x,y,w,h               cmd */
-	{ "firefox",        "firefox",                                  NULL,       1 << 1,       0,           -1, 	      1111,1111,1111,1111,  {"firefox", NULL} },
-	{ "librewolf",      "LibreWolf",                                NULL,       1 << 1,       0,           -1,        50,  50,  500, 500,   {"librewolf", NULL} },
-	{ "chromium",       "chromium",                                 NULL,       1 << 1,       0,           -1,        50,  50,  500, 500,   {"chromium", "--ozone-platform-hint=auto", NULL} },
-	{ "freetube",       "FreeTube",                                 NULL,       1 << 1,       0,           -1,        50,  50,  500, 500,   {NULL} },
-	{ "mranger",        "Mranger",                                  NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
-	{ "mlf",            "Mlf",                                      NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {"footclient", "-a", "Mlf", "-T", "lf", "-L", "lf", NULL} },
-	{ "mpv",            "mpv",                                      NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {NULL} },
-	{ "nuclear",        "nuclear",                                  NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {"flatpak", "run", "org.js.nuclear.Nuclear", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "firefox",        "firefox",                                  NULL,       1 << 1,       0,           1, 	      50,  50,  500, 500,  {"firefox", NULL} },
+	{ "librewolf",      "LibreWolf",                                NULL,       1 << 1,       0,           1,         50,  50,  500, 500,   {"librewolf", NULL} },
+	{ "chromium",       "chromium",                                 NULL,       1 << 1,       0,           1,         50,  50,  500, 500,   {"chromium", "--ozone-platform-hint=auto", NULL} },
+	{ "freetube",       "FreeTube",                                 NULL,       1 << 1,       0,           1,         50,  50,  500, 500,   {NULL} },
+	{ "mranger",        "Mranger",                                  NULL,       1 << 2,       0,           0,         50,  50,  500, 500,   {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
+	{ "mlf",            "Mlf",                                      NULL,       1 << 2,       0,           0,         50,  50,  500, 500,   {"footclient", "-a", "Mlf", "-T", "lf", "-L", "lf", NULL} },
+	// { "mpv",            "mpv",                                      NULL,       1 << 2,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "nuclear",        "nuclear",                                  NULL,       1 << 2,       0,           1,         50,  50,  500, 500,   {"flatpak", "run", "org.js.nuclear.Nuclear", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "code-oss",       "code-oss",                                 NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"code", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "vscodium",       "VSCodium",                                 NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"vscodium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
-	{ "mnvim",          "Mnvim",                                    NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"footclient", "-a", "Mnvim", "-T", "Neovim", "-L", "tmux", "new", "-s", "nvim", "-n", "nvim", "-AD", "nvim", NULL} },
-	{ "neovide",        "neovide",                                  NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"neovide", NULL} },
-	{ "neovide-mg",     "neovide",                                  NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"neovide", "--multigrid", NULL} },
+	{ "mnvim",          "Mnvim",                                    NULL,       1 << 3,       0,           0,         50,  50,  500, 500,   {"footclient", "-a", "Mnvim", "-T", "Neovim", "-L", "tmux", "new", "-s", "nvim", "-n", "nvim", "-AD", "nvim", NULL} },
+	{ "neovide",        "neovide",                                  NULL,       1 << 3,       0,           0,         50,  50,  500, 500,   {"neovide", NULL} },
+	{ "neovide-mg",     "neovide",                                  NULL,       1 << 3,       0,           0,         50,  50,  500, 500,   {"neovide", "--multigrid", NULL} },
 	{ "insomnia",       "Insomnia",                                 NULL,       1 << 3,       0,           -1,        50,  50,  500, 500,   {"insomnia", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "virt-manager",   "Virt-manager",                             NULL,       1 << 4,       0,           -1,        50,  50,  500, 500,   {"virt-manager", NULL} },
-	{ "dota2",          "dota2",                                    NULL,       1 << 4,       0,           -1,        50,  50,  500, 500,   {NULL} },
-	{ "wowclassic.exe", "wowclassic.exe",                           NULL,       1 << 4,       0,           -1,        50,  50,  500, 500,   {NULL} },
-	{ "discord",        "discord",                                  NULL,       1 << 5,       0,           -1,        50,  50,  500, 500,   {NULL} },
-	{ "jellyfin",       "org.jellyfin.jellyfinmediaplayer",         NULL,       1 << 5,       0,           -1,        50,  50,  500, 500,   {"flatpak", "run", "com.github.iwalton3.jellyfin-media-player", NULL} },
-	{ "ferdium",        "ferdium",                                  NULL,       1 << 5,       0,           -1,        50,  50,  500, 500,   {"ferdium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
-	{ "lutris",         "Lutris",                                   NULL,       1 << 6,       0,           -1,        50,  50,  500, 500,   {"lutris", NULL} },
-	{ "steam",          "Steam",                                    NULL,       1 << 6,       0,           -1,        50,  50,  500, 500,   {NULL} },
+	{ "dota2",          "dota2",                                    NULL,       1 << 4,       0,           0,         50,  50,  500, 500,   {NULL} },
+	{ "wowclassic.exe", "wowclassic.exe",                           NULL,       1 << 4,       0,           0,         50,  50,  500, 500,   {NULL} },
+	{ "discord",        "discord",                                  NULL,       1 << 5,       0,           1,         50,  50,  500, 500,   {NULL} },
+	{ "jellyfin",       "org.jellyfin.jellyfinmediaplayer",         NULL,       1 << 5,       0,           1,         50,  50,  500, 500,   {"flatpak", "run", "com.github.iwalton3.jellyfin-media-player", NULL} },
+	{ "ferdium",        "ferdium",                                  NULL,       1 << 5,       0,           1,         50,  50,  500, 500,   {"ferdium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "lutris",         "Lutris",                                   NULL,       1 << 6,       0,           0,         50,  50,  500, 500,   {"lutris", NULL} },
+	{ "steam",          "Steam",                                    NULL,       1 << 6,       0,           0,         50,  50,  500, 500,   {NULL} },
 	{ "gimp",           "Gimp",                                     NULL,       1 << 7,       0,           -1,        50,  50,  500, 500,   {"gimp", NULL} },
 	{ "krita",          "krita",                                    NULL,       1 << 7,       0,           -1,        50,  50,  500, 500,   {"krita", NULL} },
-	{ "obs",            "obs",                                      NULL,       1 << 7,       0,           -1,        50,  50,  500, 500,   {"obs", NULL} },
-	{ "qbittorrent",    "qBittorrent",                              NULL,       1 << 8,       0,           -1,        50,  50,  500, 500,   {"qbittorrent", NULL} },
-	{ "mcmus",          "Mcmus",                                    NULL,       0,            1,           -1,        0,   0,   1820,991,   {"footclient", "-a", "Mcmus", "-T", "cmus", "-L", "cmus", NULL} },
-	{ "mbtop",          "Mbtop",                                    NULL,       0,            1,           -1,        0,   0,   1820,991,   {"footclient", "-a", "Mbtop", "-T", "btop", "-L", "btop", "-p", "0", NULL} },
+	{ "obs",            "obs",                                      NULL,       1 << 7,       0,           1,         50,  50,  500, 500,   {"obs", NULL} },
+	{ "qbittorrent",    "qBittorrent",                              NULL,       1 << 8,       0,           1,         50,  50,  500, 500,   {"qbittorrent", NULL} },
+	{ "mcmus",          "Mcmus",                                    NULL,       0,            1,           -1,        50,  50,  1820,980,   {"footclient", "-a", "Mcmus", "-T", "cmus", "-L", "cmus", NULL} },
+	{ "mbtop",          "Mbtop",                                    NULL,       0,            1,           -1,        50,  50,  1820,980,   {"footclient", "-a", "Mbtop", "-T", "btop", "-L", "btop", "-p", "0", NULL} },
 	{ "mpacmixer",      "Mpacmixer",                                NULL,       0,            1,           -1,        1413,473, 500, 600,   {"footclient", "-a", "Mpacmixer", "-T", "pacmixer", "-L", "pacmixer",  NULL} },
 	{ "pavucontrol",    "pavucontrol",                              NULL,       0,            1,           -1,        1413,473, 500, 600,   {"pavucontrol", "-t", "4", NULL} },
 };
@@ -116,7 +116,8 @@ static const MonitorRule monrules[] = {
 	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 	*/
 	/* defaults */
-	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
+	{ "DP-1",     0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
+	{ "HDMI-A-1", 0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL },
 };
 
 /* keyboard */
@@ -188,8 +189,8 @@ static const enum libinput_config_tap_button_map button_map = LIBINPUT_CONFIG_TA
 
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                    KEY,            view,            {.ui = 1 << TAG} }, \
-	{ MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }
-	// { MODKEY|WLR_MODIFIER_SHIFT, KEY,            tag,             {.ui = 1 << TAG} }, \
+	{ MODKEY|WLR_MODIFIER_SHIFT, KEY,            tag,             {.ui = 1 << TAG} }
+	// { MODKEY|WLR_MODIFIER_CTRL,  KEY,            toggleview,      {.ui = 1 << TAG} }, \
 	// { MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,KEY,toggletag,  {.ui = 1 << TAG} }
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
