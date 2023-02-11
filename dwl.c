@@ -2765,9 +2765,10 @@ spawnorfocus(const Arg *arg)
 	if (found) {
 		if (c->isfloating && !c->isfullscreen) {
 			if (selmon != c->mon) {
+				c->geom.x += selmon->w.x - c->mon->w.x;
+				c->geom.y += selmon->w.y - c->mon->w.y;
 				setmon(c, selmon, 0);
 				focusclient(c, 1);
-				arrange(selmon);
 			} else {
 				if (VISIBLEON(c, selmon)) {
 					c->tags = 0;
@@ -2782,6 +2783,10 @@ spawnorfocus(const Arg *arg)
 				}
 			}
 		} else {
+			if (selmon != c->mon) {
+				selmon = c->mon;
+				focusclient(focustop(selmon), 1);
+			}
 			if (!VISIBLEON(c, c->mon)) {
 				Arg a = { .ui = c->tags };
 				view(&a);
@@ -2791,10 +2796,14 @@ spawnorfocus(const Arg *arg)
 	} else {
 		int i = 0;
 		Monitor *m;
-		if (r->monitor < 0) {
+		if (r->monitor > 0) {
 			wl_list_for_each(m, &mons, link)
 				if (r->monitor == i++ && m->wlr_output->enabled) {
-					focusclient(focustop(m), 1);
+					if (m != selmon) {
+						selmon = m;
+						focusclient(focustop(selmon), 1);
+					}
+					break;
 				}
 		}
 		if (r->tags) {
