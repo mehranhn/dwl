@@ -16,3 +16,4 @@ my pertagconfig
 my improvedrules
 my toggleproc
 focusMonPointer
+outputPowerManagement
