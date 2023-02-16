@@ -273,7 +273,7 @@ static const Key keys[] = {
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
 	/* general tasks */
 	{ MODKEY|WLR_MODIFIER_ALT,                           Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_y", NULL}} },
-	{ WLR_MODIFIER_CTRL,                                 Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_path", NULL}} },
+	{ MODKEY|WLR_MODIFIER_CTRL,                          Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_path", NULL}} },
 	{ WLR_MODIFIER_ALT,                                  Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_desktop", NULL}} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_q,                     spawn,                    {.v = (char *[]){"mcontrol", "menu_shutdown", NULL}} },
 	{ MODKEY|WLR_MODIFIER_SHIFT,                         Key_l,                     spawn,                    {.v = (char *[]){"mcontrol", "ylock", NULL}} },
