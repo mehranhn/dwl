@@ -229,6 +229,11 @@ typedef struct {
 	const Layout *lt;
 	enum wl_output_transform rr;
 	int x, y;
+	int width;
+	int height;
+	float rate;
+	int adaptive_true;
+	int custom;
 } MonitorRule;
 
 struct pointer_constraint {
@@ -344,6 +349,7 @@ static void rendermon(struct wl_listener *listener, void *data);
 static void requeststartdrag(struct wl_listener *listener, void *data);
 static void resize(Client *c, struct wlr_box geo, int interact, int draw_borders);
 static void run(char *startup_cmd);
+static void setmode(struct wlr_output *output, int custom, int width, int height, float refresh_rate);
 static void setcursor(struct wl_listener *listener, void *data);
 static void setfloating(Client *c, int floating);
 static void setfullscreen(Client *c, int fullscreen);
@@ -1058,10 +1064,16 @@ createmon(struct wl_listener *listener, void *data)
 	/* This event is raised by the backend when a new output (aka a display or
 	 * monitor) becomes available. */
 	struct wlr_output *wlr_output = data;
+	struct wlr_output_mode *wlr_output_mode;
+	int32_t width,height;
+	float rate;
+	int found = 0;
 	const MonitorRule *r;
 	size_t i;
 	Monitor *m = wlr_output->data = ecalloc(1, sizeof(*m));
 	m->wlr_output = wlr_output;
+
+	wlr_output_mode = wlr_output_preferred_mode(wlr_output);
 
 	wlr_output_init_render(wlr_output, alloc, drw);
 
@@ -1076,6 +1088,7 @@ createmon(struct wl_listener *listener, void *data)
 	m->tagset[0] = m->tagset[1] = 1;
 	for (r = monrules; r < END(monrules); r++) {
 		if (!r->name || strstr(wlr_output->name, r->name)) {
+			found = 1;
 			m->mfact = r->mfact;
 			m->nmaster = r->nmaster;
 			wlr_output_set_scale(wlr_output, r->scale);
@@ -1084,6 +1097,12 @@ createmon(struct wl_listener *listener, void *data)
 			wlr_output_set_transform(wlr_output, r->rr);
 			m->m.x = r->x;
 			m->m.y = r->y;
+			rate = r->rate > 0 ? r->rate : wlr_output_mode->refresh;
+			width = r->width > 0 ? r->width : wlr_output_mode->width;
+			height = r->height > 0 ? r->height : wlr_output_mode->height;
+			setmode(wlr_output, r->custom, width, height, rate);
+			if (r->adaptive_true)
+				wlr_output_enable_adaptive_sync(wlr_output, 1);
 			break;
 		}
 	}
@@ -1092,7 +1111,8 @@ createmon(struct wl_listener *listener, void *data)
 	 * monitor supports only a specific set of modes. We just pick the
 	 * monitor's preferred mode; a more sophisticated compositor would let
 	 * the user configure it. */
-	wlr_output_set_mode(wlr_output, wlr_output_preferred_mode(wlr_output));
+	if (!found)
+		wlr_output_set_mode(wlr_output, wlr_output_mode);
 
 	/* Set up event listeners */
 	LISTEN(&wlr_output->events.frame, &m->frame, rendermon);
@@ -2337,6 +2357,37 @@ run(char *startup_cmd)
 	 * loop configuration to listen to libinput events, DRM events, generate
 	 * frame events at the refresh rate, and so on. */
 	wl_display_run(dpy);
+}
+
+void
+setmode(struct wlr_output *output, int custom, int width, int height, float refresh_rate) {
+	// Not all floating point integers can be represented exactly
+	// as (int)(1000 * mHz / 1000.f)
+	// round() the result to avoid any error
+	struct wlr_output_mode *mode, *best = NULL;
+	int mhz = (int)((refresh_rate * 1000) + 0.5);
+
+	if (wl_list_empty(&output->modes) || custom) {
+		wlr_output_set_custom_mode(output, width, height,
+			refresh_rate > 0 ? mhz : 0);
+		return;
+	}
+
+	wl_list_for_each(mode, &output->modes, link) {
+		if (mode->width == width && mode->height == height) {
+			if (mode->refresh == mhz) {
+				best = mode;
+				break;
+			}
+			// if (best == NULL || mode->refresh > best->refresh) {
+			// 	best = mode;
+			// }
+		}
+	}
+	if (!best) {
+		best = wlr_output_preferred_mode(output);
+	}
+	wlr_output_set_mode(output, best);
 }
 
 void
