@@ -44,8 +44,8 @@ static const char *const autostart[] = {
 /* pointer constraints */
 static const int allow_constrain      = 1;
 
-#define LM 1
-#define RM 0
+#define LM 0
+#define RM 1
 #define SM -1
 
 static const Rule rules[] = {
@@ -65,18 +65,24 @@ static const Rule rules[] = {
 	{ "mnvim",          "Mnvim",                                    NULL,       1 << 3,       0,           LM,        50,  50,  500, 500,   {"footclient", "-a", "Mnvim", "-T", "Neovim", "-L", "tmux", "new", "-s", "nvim", "-n", "nvim", "-AD", "nvim", NULL} },
 	{ "neovide",        "neovide",                                  NULL,       1 << 3,       0,           LM,        50,  50,  500, 500,   {"neovide", NULL} },
 	{ "neovide-mg",     "neovide",                                  NULL,       1 << 3,       0,           LM,        50,  50,  500, 500,   {"neovide", "--multigrid", NULL} },
-	{ "insomnia",       "Insomnia",                                 NULL,       1 << 3,       0,           RM,        50,  50,  500, 500,   {"insomnia", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "spotube",        "spotube",                                  NULL,       1 << 3,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "com.github.KRTirtho.Spotube", NULL} },
+	{ "givemelyrics",   "com.github.muriloventuroso.givemelyrics",  NULL,       1 << 3,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "com.github.muriloventuroso.givemelyrics", NULL} },
+	{ "dialect",        "app.drey.Dialect",                         NULL,       1 << 3,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "app.drey.Dialect", NULL} },
+	{ "shortwave",      "de.haeckerfelix.Shortwave",                NULL,       1 << 3,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "de.haeckerfelix.Shortwave", NULL} },
 	{ "virt-manager",   "Virt-manager",                             NULL,       1 << 4,       0,           RM,        50,  50,  500, 500,   {"virt-manager", NULL} },
 	{ "dota2",          "dota2",                                    NULL,       1 << 4,       0,           LM,        50,  50,  500, 500,   {NULL} },
 	{ "wowclassic.exe", "wowclassic.exe",                           NULL,       1 << 4,       0,           LM,        50,  50,  500, 500,   {NULL} },
 	{ "discord",        "discord",                                  NULL,       1 << 5,       0,           RM,        50,  50,  500, 500,   {NULL} },
 	{ "jellyfin",       "org.jellyfin.jellyfinmediaplayer",         NULL,       1 << 5,       0,           LM,        50,  50,  500, 500,   {"flatpak", "run", "com.github.iwalton3.jellyfin-media-player", NULL} },
 	{ "ferdium",        "ferdium",                                  NULL,       1 << 5,       0,           RM,        50,  50,  500, 500,   {"ferdium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "jitsi",          "Jitsi Meet",                               NULL,       1 << 5,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "org.jitsi.jitsi-meet", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "superProductivity","superProductivity",                      NULL,       1 << 6,       0,           RM,        50,  50,  500, 500,   {"superProductivity", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "lutris",         "Lutris",                                   NULL,       1 << 6,       0,           LM,        50,  50,  500, 500,   {"lutris", NULL} },
 	{ "steam",          "Steam",                                    NULL,       1 << 6,       0,           LM,        50,  50,  500, 500,   {NULL} },
 	{ "gimp",           "Gimp",                                     NULL,       1 << 7,       0,           SM,        50,  50,  500, 500,   {"gimp", NULL} },
 	{ "krita",          "krita",                                    NULL,       1 << 7,       0,           SM,        50,  50,  500, 500,   {"krita", NULL} },
+	{ "draw.io",        "drawio",                                   NULL,       1 << 7,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "com.jgraph.drawio.desktop", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
+	{ "insomnia",       "Insomnia",                                 NULL,       1 << 7,       0,           RM,        50,  50,  500, 500,   {"flatpak", "run", "rest.insomnia.Insomnia", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "obs",            "obs",                                      NULL,       1 << 7,       0,           RM,        50,  50,  500, 500,   {"obs", NULL} },
 	{ "qbittorrent",    "qBittorrent",                              NULL,       1 << 8,       0,           RM,        50,  50,  500, 500,   {"qbittorrent", NULL} },
 	{ "mcmus",          "Mcmus",                                    NULL,       0,            1,           SM,        50,  50,  1820,980,   {"footclient", "-a", "Mcmus", "-T", "cmus", "-L", "cmus", NULL} },
