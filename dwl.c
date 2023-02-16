@@ -309,6 +309,7 @@ static void destroysessionmgr(struct wl_listener *listener, void *data);
 static Monitor *dirtomon(enum wlr_direction dir);
 static void focusclient(Client *c, int lift);
 static void focusmon(const Arg *arg);
+static void focusmonutil(Monitor *m);
 static void focusstack(const Arg *arg);
 static Client *focustop(Monitor *m);
 static void fullscreennotify(struct wl_listener *listener, void *data);
@@ -1520,13 +1521,36 @@ void
 focusmon(const Arg *arg)
 {
 	int i = 0, nmons = wl_list_length(&mons);
-	Monitor *prevm = selmon;
+	Monitor *m = selmon;
 	if (nmons)
 		do /* don't switch to disabled mons */
-			selmon = dirtomon(arg->i);
-		while (!selmon->wlr_output->enabled && i++ < nmons);
+			m = dirtomon(arg->i);
+		while (!m->wlr_output->enabled && i++ < nmons);
+	focusmonutil(m);
+}
+
+void
+focusmonutil(Monitor *m)
+{
+	Monitor *prevm = selmon, *mon;
+	double cx, cy, cxd, cyd;
+	int mx, my, mxw, myh;
+	selmon = m;
+	cx = cursor->x;
+	cy = cursor->y;
 	focusclient(focustop(selmon), 1);
-	wlr_cursor_move(cursor, NULL, selmon->m.x - prevm->m.x , 0);
+	wl_list_for_each(mon, &mons, link) {
+		mx = mon->m.x;
+		my = mon->m.y;
+		mxw = mx + mon->m.width;
+		myh = my + mon->m.height;
+		if (cx >= mx && cx < mxw && cy >= my && cy < myh) {
+			cxd = cx - mx;
+			cyd = cy - my;
+			wlr_cursor_warp(cursor, NULL, selmon->m.x + cxd, selmon->m.y + cyd);
+			break;
+		}
+	}
 }
 
 void
