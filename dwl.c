@@ -2900,8 +2900,7 @@ spawnorfocus(const Arg *arg)
 			}
 		} else {
 			if (selmon != c->mon) {
-				selmon = c->mon;
-				focusclient(focustop(selmon), 1);
+				focusmonutil(c->mon);
 			}
 			if (!VISIBLEON(c, c->mon)) {
 				Arg a = { .ui = c->tags };
@@ -2912,12 +2911,12 @@ spawnorfocus(const Arg *arg)
 	} else {
 		int i = 0;
 		Monitor *m;
-		if (r->monitor > 0) {
+		Monitor *prevm = selmon;
+		if (r->monitor >= 0) {
 			wl_list_for_each(m, &mons, link)
 				if (r->monitor == i++ && m->wlr_output->enabled) {
 					if (m != selmon) {
-						selmon = m;
-						focusclient(focustop(selmon), 1);
+						focusmonutil(m);
 					}
 					break;
 				}
