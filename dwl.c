@@ -146,6 +146,7 @@ typedef struct {
 } Client;
 
 typedef struct {
+	uint8_t shouldrepeat;
 	uint32_t mod;
 	xkb_keycode_t keycode;
 	void (*func)(const Arg *);
@@ -156,8 +157,7 @@ typedef struct {
 	struct wl_list link;
 	struct wlr_keyboard *wlr_keyboard;
 
-	int nsyms;
-	const xkb_keysym_t *keysyms; /* invalid if nsyms == 0 */
+	uint32_t keycode;
 	uint32_t mods; /* invalid if nsyms == 0 */
 	struct wl_event_source *key_repeat_source;
 
@@ -1691,7 +1691,8 @@ keybinding(uint32_t mods, xkb_keycode_t keycode)
 		if (CLEANMASK(mods) == CLEANMASK(k->mod) &&
 				keycode == k->keycode && k->func) {
 			k->func(&k->arg);
-			handled = 1;
+			handled = k->shouldrepeat ? 3 : 1;
+			break;
 		}
 	}
 	return handled;
@@ -1718,14 +1719,13 @@ keypress(struct wl_listener *listener, void *data)
 			&& event->state == WL_KEYBOARD_KEY_STATE_PRESSED)
 		handled = keybinding(mods, keycode);
 
-	if (handled && kb->wlr_keyboard->repeat_info.delay > 0) {
+	if (handled == 3 && kb->wlr_keyboard->repeat_info.delay > 0) {
 		kb->mods = mods;
-		kb->keysyms = syms;
-		kb->nsyms = nsyms;
+		kb->keycode = keycode;
 		wl_event_source_timer_update(kb->key_repeat_source,
 				kb->wlr_keyboard->repeat_info.delay);
 	} else {
-		kb->nsyms = 0;
+		kb->keycode = 0;
 		wl_event_source_timer_update(kb->key_repeat_source, 0);
 	}
 
@@ -1759,13 +1759,11 @@ int
 keyrepeat(void *data)
 {
 	Keyboard *kb = data;
-	int i;
-	if (kb->nsyms && kb->wlr_keyboard->repeat_info.rate > 0) {
+	if (kb->keycode && kb->wlr_keyboard->repeat_info.rate > 0) {
 		wl_event_source_timer_update(kb->key_repeat_source,
 				1000 / kb->wlr_keyboard->repeat_info.rate);
 
-		for (i = 0; i < kb->nsyms; i++)
-			keybinding(kb->mods, kb->keysyms[i]);
+		keybinding(kb->mods, kb->keycode);
 	}
 
 	return 0;
