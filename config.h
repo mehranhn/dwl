@@ -29,7 +29,7 @@ static const char *const autostart[] = {
 	"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
 	"/usr/lib/xdg-desktop-portal", "-r", NULL,
 	"dunst", "~/.config/dunst/dunstrc", NULL,
-	"swaybg", "-i", "/usr/share/backgrounds/wallpapers/wallpaper_7.jpg", "-m", "fill", "-o", "*", NULL,
+	"sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL,
 	"udiskie", NULL,
 	// "kdeconnect-cli", "--refresh", NULL,
 	// "lxqt-policykit-agent", NULL,
@@ -307,6 +307,8 @@ static const Key keys[] = {
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev_selective", NULL}} },
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause_selective", NULL}} },
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next_selective", NULL}} },
+	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86MonBrightnessDown, spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_down", NULL}} },
+	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86MonBrightnessUp,   spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_up", NULL}} },
 };
 
 static const Button buttons[] = {
