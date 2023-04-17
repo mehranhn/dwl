@@ -57,17 +57,20 @@ static const Layout layouts[] = {
 /* tagging */
 static const TagData tags[] = {
 	/* symbol   layout             mfact     nmaster */
-    { "1",      &layouts[0],       0.55f,    1, },
-    { "2",      &layouts[2],       0.55f,    1, },
-    { "3",      &layouts[0],       0.55f,    1, },
-    { "4",      &layouts[2],       0.55f,    1, },
-    { "5",      &layouts[0],       0.55f,    1, },
-    { "6",      &layouts[2],       0.55f,    1, },
-    { "7",      &layouts[0],       0.75f,    1, },
-    { "8",      &layouts[0],       0.55f,    1, },
-    { "9",      &layouts[0],       0.55f,    1, },
-    { "0",      &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[2],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[2],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[2],       0.55f,    1, },
+    { &layouts[0],       0.75f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
 };
+
+/* tagging - tagcount must be no greater than 31 */
+static const int tagcount = LENGTH(tags);
 
 /* monitors */
 static const MonitorRule monrules[] = {

@@ -107,20 +107,23 @@ static const Layout layouts[] = {
 
 /* tagging */
 static const TagData tags[] = {
-	/* symbol   layout             mfact     nmaster */
-    { "",      &layouts[0],       0.55f,    1, },
-    { "",      &layouts[2],       0.55f,    1, },
-    { "",      &layouts[0],       0.55f,    1, },
-    { "",      &layouts[2],       0.55f,    1, },
-    { "",      &layouts[0],       0.55f,    1, },
-    { "",      &layouts[2],       0.55f,    1, },
-    { "",      &layouts[0],       0.75f,    1, },
-    { "",      &layouts[0],       0.55f,    1, },
-    { "",      &layouts[0],       0.55f,    1, },
-    { "",      &layouts[0],       0.55f,    1, },
-    { "-",      &layouts[0],       0.55f,    1, },
-    { "=",      &layouts[0],       0.55f,    1, },
+	/*layout             mfact     nmaster */
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[2],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[2],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[2],       0.55f,    1, },
+    { &layouts[0],       0.75f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
+    { &layouts[0],       0.55f,    1, },
 };
+
+/* tagging - tagcount must be no greater than 31 */
+static const int tagcount = LENGTH(tags);
 
 /* monitors */
 static const MonitorRule monrules[] = {
