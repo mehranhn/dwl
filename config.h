@@ -1,5 +1,6 @@
 #define PATCHALWAYSCENTER 1
 #define PATCHATTACHBOTTOM 1
+#include "ispc.h"
 
 /* appearance */
 static const int sloppyfocus               = 1;  /* focus follows mouse */
