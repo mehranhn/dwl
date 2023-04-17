@@ -307,8 +307,8 @@ static const Key keys[] = {
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioPrev,         spawn,                    {.v = (char *[]){"mcontrol", "player_prev_selective", NULL}} },
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioPlay,         spawn,                    {.v = (char *[]){"mcontrol", "player_play_pause_selective", NULL}} },
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next_selective", NULL}} },
-	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86MonBrightnessDown, spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_down", NULL}} },
-	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86MonBrightnessUp,   spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_up", NULL}} },
+	{ 0,       0,                                                 Key_XF86MonBrightnessDown, spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_down", NULL}} },
+	{ 0,       0,                                                 Key_XF86MonBrightnessUp,   spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_up", NULL}} },
 };
 
 static const Button buttons[] = {
