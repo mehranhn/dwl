@@ -23,7 +23,7 @@ static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 0.0};
 
 /* autostart */
 static const char *const autostart[] = {
-	"swayidle", NULL,
+	// "swayidle", NULL,
 	"lf", "-server", NULL,
 	"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
 	"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
@@ -95,6 +95,7 @@ static const Rule rules[] = {
 static ToggleProc toggleprocs[] = {
 	/* id               autosatrt   signal       notification ID  notification title     notification icon    cmd           not my real location                      0 */
 	{ "gammastep",      1,          SIGTERM,     "8001",          "Blue Light Filter",   "eye-solid",         {"gammastep", "-l", "36.51212:51.1251775", "-r", NULL}, 0},
+	{ "swayidle",       1,          SIGTERM,     "8002",          "Swayidle",            "eye-solid",         {"swayidle", NULL},                                     0},
 };
 
 /* layout(s) */
@@ -132,8 +133,12 @@ static const MonitorRule monrules[] = {
 	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL   -1,  -1,   0,     0,      0,                1,       0},
 	*/
 	/* defaults */
+#if ISPC
 	{ "DP-1",     0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,1920,   0,   0,     0,      0,                1,       0},
 	{ "HDMI-A-1", 0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   0,   0,   0,     0,      0,                1,       0},
+#else
+	{ "eDP-1",    0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,1920,   0,   0,     0,      0,                1,       0},
+#endif
 };
 
 /* keyboard */
@@ -281,6 +286,7 @@ static const Key keys[] = {
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_o,                     spawnorfocus,             {.v = "pavucontrol"} },
 	/* toggleprocs */
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
+	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_bracketleft,           toggleproccmd,            {.v = "swayidle"} },
 	/* general tasks */
 	{ 0,       MODKEY|WLR_MODIFIER_ALT,                           Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_y", NULL}} },
 	{ 0,       MODKEY|WLR_MODIFIER_CTRL,                          Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_path", NULL}} },
