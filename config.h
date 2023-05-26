@@ -55,7 +55,7 @@ static const Rule rules[] = {
 	* when width or height == 0 the default size of the client is used*/
 	/* id                app_id                                     title       tags          isfloating   monitor    x,y,w,h               cmd */
 	{ "firefox",        "firefox",                                  NULL,       1 << 1,       0,           SM, 	      50,  50,  500, 500,   {"firefox", NULL} },
-	{ "librewolf",      "LibreWolf",                                NULL,       1 << 1,       0,           SM,        50,  50,  500, 500,   {"librewolf", NULL} },
+	{ "librewolf",      "librewolf-default",                        NULL,       1 << 1,       0,           SM,        50,  50,  500, 500,   {"librewolf", NULL} },
 	{ "chromium",       "chromium",                                 NULL,       1 << 1,       0,           SM,        50,  50,  500, 500,   {"chromium", "--ozone-platform-hint=auto", NULL} },
 	{ "freetube",       "FreeTube",                                 NULL,       1 << 1,       0,           SM,        50,  50,  500, 500,   {NULL} },
 	{ "mranger",        "Mranger",                                  NULL,       1 << 2,       0,           LM,        50,  50,  500, 500,   {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
@@ -316,6 +316,8 @@ static const Key keys[] = {
 	{ 0,       WLR_MODIFIER_SHIFT,                                Key_XF86AudioNext,         spawn,                    {.v = (char *[]){"mcontrol", "player_next_selective", NULL}} },
 	{ 0,       0,                                                 Key_XF86MonBrightnessDown, spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_down", NULL}} },
 	{ 0,       0,                                                 Key_XF86MonBrightnessUp,   spawn,                    {.v = (char *[]){"mcontrol", "mon_brightness_up", NULL}} },
+	{ 0,       MODKEY,                                            Key_backslash,             spawn,                    {.v = (char *[]){"mcontrol", "secret_open", NULL}} },
+	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_backslash,             spawn,                    {.v = (char *[]){"mcontrol", "secret_close", NULL}} },
 };
 
 static const Button buttons[] = {
