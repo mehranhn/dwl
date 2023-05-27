@@ -2637,15 +2637,7 @@ void
 setup(void)
 {
 	struct sigaction sa_term = {.sa_flags = SA_RESTART, .sa_handler = quitsignal};
-	struct sigaction sa_sigchld = {
-#ifdef XWAYLAND
-		.sa_flags = SA_RESTART,
-		.sa_handler = sigchld,
-#else
-		.sa_flags = SA_NOCLDSTOP | SA_NOCLDWAIT | SA_RESTART,
-		.sa_handler = SIG_IGN,
-#endif
-	};
+    struct sigaction sa_sigchld = {.sa_flags = SA_RESTART, .sa_handler = sigchld};
 	sigemptyset(&sa_term.sa_mask);
 	sigemptyset(&sa_sigchld.sa_mask);
 	/* The Wayland display is managed by libwayland. It handles accepting
@@ -2840,6 +2832,41 @@ setup(void)
 		fprintf(stderr, "failed to setup XWayland X server, continuing without it\n");
 	}
 #endif
+}
+
+void
+sigchld(int unused)
+{
+	siginfo_t in;
+	/* We should be able to remove this function in favor of a simple
+	 *	struct sigaction sa = {.sa_handler = SIG_IGN};
+	 * 	sigaction(SIGCHLD, &sa, NULL);
+	 * but the Xwayland implementation in wlroots currently prevents us from
+	 * setting our own disposition for SIGCHLD.
+	 */
+	/* WNOWAIT leaves the child in a waitable state, in case this is the
+	 * XWayland process
+	 */
+	while (!waitid(P_ALL, 0, &in, WEXITED|WNOHANG|WNOWAIT) && in.si_pid
+#ifdef XWAYLAND
+			&& (!xwayland || in.si_pid != xwayland->server->pid)
+#endif
+    ) {
+		pid_t *p, *lim;
+		waitpid(in.si_pid, NULL, 0);
+		if (in.si_pid == child_pid)
+			child_pid = -1;
+		if (!(p = autostart_pids))
+			continue;
+		lim = &p[autostart_len];
+
+		for (; p < lim; p++) {
+			if (*p == in.si_pid) {
+				*p = -1;
+				break;
+			}
+		}
+	}
 }
 
 void
@@ -3491,40 +3518,6 @@ sethints(struct wl_listener *listener, void *data)
 	if (c != focustop(selmon)) {
 		c->isurgent = xcb_icccm_wm_hints_get_urgency(c->surface.xwayland->hints);
 		printstatus();
-	}
-}
-
-void
-sigchld(int unused)
-{
-	siginfo_t in;
-	/* We should be able to remove this function in favor of a simple
-	 *	struct sigaction sa = {.sa_handler = SIG_IGN};
-	 * 	sigaction(SIGCHLD, &sa, NULL);
-	 * but the Xwayland implementation in wlroots currently prevents us from
-	 * setting our own disposition for SIGCHLD.
-	 */
-	/* WNOWAIT leaves the child in a waitable state, in case this is the
-	 * XWayland process
-	 */
-	while (!waitid(P_ALL, 0, &in, WEXITED|WNOHANG|WNOWAIT) && in.si_pid
-#ifdef XWAYLAND
-			&& (!xwayland || in.si_pid != xwayland->server->pid)) {
-#endif
-		pid_t *p, *lim;
-		waitpid(in.si_pid, NULL, 0);
-		if (in.si_pid == child_pid)
-			child_pid = -1;
-		if (!(p = autostart_pids))
-			continue;
-		lim = &p[autostart_len];
-
-		for (; p < lim; p++) {
-			if (*p == in.si_pid) {
-				*p = -1;
-				break;
-			}
-		}
 	}
 }
 
