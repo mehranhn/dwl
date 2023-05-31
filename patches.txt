@@ -18,3 +18,4 @@ my toggleproc
 focusMonPointer
 outputPowerManagement
 my custom monitorconfig
+keyboardshortcutsinhibit
