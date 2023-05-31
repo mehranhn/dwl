@@ -702,16 +702,20 @@ autostartexec(void) {
 
 void
 autostarttoggleprocs(void) {
+    fprintf(stderr, "1\n");
 	for (int i = 0; i < LENGTH(toggleprocs); i++) {
+        fprintf(stderr, "2: %d\n", i);
 		if (toggleprocs[i].autostart) {
+            fprintf(stderr, "3: %d\n", i);
 			pid_t pid = fork();
 			if (pid == -1)
 				continue;
 			if (pid == 0) {
 				setsid();
-				execvp(toggleprocs[i].cmd[0], (char *const *) toggleprocs[0].cmd);
+				execvp(toggleprocs[i].cmd[0], (char *const *) toggleprocs[i].cmd);
 				die("dwl: execvp %s:", toggleprocs[i].cmd[0]);
 			} else {
+                fprintf(stderr, "5: %d\n", pid);
 				toggleprocs[i].pid = pid;
 			}
 		}
@@ -2856,6 +2860,14 @@ sigchld(int unused)
 		waitpid(in.si_pid, NULL, 0);
 		if (in.si_pid == child_pid)
 			child_pid = -1;
+
+        for (int i = 0; i < LENGTH(toggleprocs); i++) {
+            if (toggleprocs[i].pid == in.si_pid) {
+                toggleprocs[i].pid = 0;
+                break;
+            }
+        }
+
 		if (!(p = autostart_pids))
 			continue;
 		lim = &p[autostart_len];
