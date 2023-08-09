@@ -19,3 +19,4 @@ focusMonPointer
 outputPowerManagement
 my custom monitorconfig
 keyboardshortcutsinhibit
+virtualpointer
