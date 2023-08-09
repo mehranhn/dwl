@@ -20,3 +20,4 @@ outputPowerManagement
 my custom monitorconfig
 keyboardshortcutsinhibit
 virtualpointer
+deck

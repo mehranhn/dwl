@@ -104,6 +104,7 @@ static const Layout layouts[] = {
 	{ "[]=",      tile },
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "[D]",      deck },
 };
 
 /* tagging */
@@ -115,7 +116,7 @@ static const TagData tags[] = {
     { &layouts[2],       0.55f,    1, },
     { &layouts[0],       0.55f,    1, },
     { &layouts[2],       0.55f,    1, },
-    { &layouts[0],       0.75f,    1, },
+    { &layouts[3],       0.75f,    1, },
     { &layouts[0],       0.55f,    1, },
     { &layouts[0],       0.55f,    1, },
     { &layouts[0],       0.55f,    1, },
@@ -243,6 +244,7 @@ static const Key keys[] = {
 	{ 0,       MODKEY,                                            Key_t,                       setlayout,              {.v = &layouts[0]} },
 	// { 0,       MODKEY,                                            Key_f,                       setlayout,              {.v = &layouts[1]} },
 	{ 0,       MODKEY,                                            Key_r,                       setlayout,              {.v = &layouts[2]} },
+	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_t,                       setlayout,              {.v = &layouts[3]} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_f,                       togglefloating,         {0} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_a,                       togglefloating,         {0} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_e,                       togglefullscreen,       {0} },

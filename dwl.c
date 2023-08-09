@@ -299,6 +299,7 @@ static void createpointer(struct wlr_pointer *pointer);
 static void createpointerconstraint(struct wl_listener *listener, void *data);
 static void createshortcutsinhibitor(struct wl_listener *listener, void *data);
 static void cursorframe(struct wl_listener *listener, void *data);
+static void deck(Monitor *m);
 static void defaultgaps(const Arg *arg);
 static void destroydragicon(struct wl_listener *listener, void *data);
 static void destroyidleinhibitor(struct wl_listener *listener, void *data);
@@ -1345,6 +1346,56 @@ void
 defaultgaps(const Arg *arg)
 {
 	setgaps(gappoh, gappov, gappih, gappiv);
+}
+
+void
+deck(Monitor *m)
+{
+	unsigned int i, n = 0, h, r, oe = enablegaps, ie = enablegaps, mw, my, draw_borders = 1;
+	Client *c;
+
+	wl_list_for_each(c, &clients, link)
+		if (VISIBLEON(c, m) && !c->isfloating && !c->isfullscreen)
+			n++;
+	if (n == 0)
+		return;
+
+	if (smartgaps == n) {
+		oe = 0; // outer gaps disabled
+	}
+
+    if (smartborders == n)
+        draw_borders = 0;
+
+	if (n > m->nmaster)
+        mw = m->nmaster ? (m->w.width + m->gappiv*ie) * m->mfact : 0;
+	else
+		mw = m->w.width - 2*m->gappov*oe + m->gappiv*ie;
+	i = 0;
+    my = m->gappoh*oe;
+	wl_list_for_each(c, &clients, link) {
+		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
+			continue;
+		if (i < m->nmaster) {
+			// resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + my, .width = mw,
+			// 	.height = (m->w.height - my) / (MIN(n, m->nmaster) - i)}, 0, draw_borders);
+			// my += c->geom.height;
+            r = MIN(n, m->nmaster) - i;
+			h = (m->w.height - my - m->gappoh*oe - m->gappih*ie * (r - 1)) / r;
+			resize(c, (struct wlr_box){.x = m->w.x + m->gappov*oe, .y = m->w.y + my,
+				.width = mw - m->gappiv*ie, .height = h}, 0, draw_borders);
+			my += c->geom.height + m->gappih*ie;
+		} else {
+			resize(c, (struct wlr_box){.x = m->w.x + mw + m->gappov*oe, .y = m->w.y + m->gappoh*oe,
+				.width = m->w.width - mw - 2*m->gappov*oe, .height = m->w.height - 2*m->gappoh*oe}, 0, draw_borders);
+
+			// resize(c, (struct wlr_box){.x = m->w.x + mw, .y = m->w.y,
+			// 	.width = m->w.width - mw, .height = m->w.height}, 0, draw_borders);
+			if (i == m->nmaster)
+				wlr_scene_node_raise_to_top(&c->scene->node);
+		}
+		i++;
+	}
 }
 
 void
