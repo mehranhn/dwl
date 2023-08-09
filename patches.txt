@@ -21,3 +21,4 @@ my custom monitorconfig
 keyboardshortcutsinhibit
 virtualpointer
 deck
+ipcv2
