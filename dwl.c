@@ -2119,6 +2119,7 @@ motionrelative(struct wl_listener *listener, void *data)
 	/* This event is forwarded by the cursor when a pointer emits a _relative_
 	 * pointer motion event (i.e. a delta) */
 	struct wlr_pointer_motion_event *event = data;
+    Client *c = focustop(selmon);
 	/* The cursor doesn't move unless we tell it to. The cursor automatically
 	 * handles constraining the motion to the output layout, as well as any
 	 * special configuration applied for the specific input device which
@@ -2129,9 +2130,10 @@ motionrelative(struct wl_listener *listener, void *data)
 		seat, (uint64_t)event->time_msec * 1000,
 		event->delta_x, event->delta_y, event->unaccel_dx, event->unaccel_dy);
 
-	if (!active_constraint) {
-		wlr_cursor_move(cursor, &event->pointer->base,
-			event->delta_x, event->delta_y);
+    
+	if (!active_constraint || c == NULL || active_constraint->surface != client_surface(c)) {
+        wlr_cursor_move(cursor, &event->pointer->base,
+            event->delta_x, event->delta_y);
 	}
 	motionnotify(event->time_msec);
 }
