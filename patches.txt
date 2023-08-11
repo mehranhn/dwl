@@ -17,7 +17,6 @@ my improvedrules
 my toggleproc
 focusMonPointer
 outputPowerManagement
-my custom monitorconfig
 keyboardshortcutsinhibit
 virtualpointer
 deck
