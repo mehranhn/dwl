@@ -128,13 +128,13 @@ static const int tagcount = LENGTH(tags);
 
 /* monitors */
 static const MonitorRule monrules[] = {
-	/* name       mfact nmaster scale layout       rotate/reflect                x    y    width, height, rate              adaptive custom */
+	/* name       mfact nmaster scale layout       rotate/reflect                x    y */
 	/* example of a HiDPI laptop monitor:
-	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL   -1,  -1,   0,     0,      0,                1,       0},
+	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL   -1,  -1},
 	*/
 	/* defaults */
-	{ "eDP-1",    0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   0,   0,   0,     0,      0,                1,       0},
-	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,1920,   0,   0,     0,      0,                1,       0},
+	{ "eDP-1",    0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   0,   0},
+	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,1920,   0},
 };
 
 /* keyboard */
@@ -249,9 +249,8 @@ static const Key keys[] = {
 	// { 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_comma,                   tagmon,                 {.i = WLR_DIRECTION_LEFT} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_w,                       tagmon,                 {.i = WLR_DIRECTION_RIGHT} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT|WLR_MODIFIER_CTRL,       Key_backslash,               togglegamemod,          {0} },
-    { 0,       MODKEY,                                            Key_grave,                   toggle_visibility,      {0}},
-	// { 0,       MODKEY,                                            Key_grave,                   spawn,                  {.v = (char *[]){"somebar", "-c", "toggle", "all", NULL}} },
-	// { 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_grave,                   spawn,                  {.v = (char *[]){"somebar", "-c", "toggle", "selected", NULL}} },
+	{ 0,       MODKEY,                                            Key_grave,                   spawn,                  {.v = (char *[]){"somebar", "-c", "toggle", "all", NULL}} },
+	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_grave,                   spawn,                  {.v = (char *[]){"somebar", "-c", "toggle", "selected", NULL}} },
 	TAGKEYS(                                                      Key_1,                       0),
 	TAGKEYS(                                                      Key_2,                       1),
 	TAGKEYS(                                                      Key_3,                       2),
