@@ -20,4 +20,3 @@ outputPowerManagement
 keyboardshortcutsinhibit
 virtualpointer
 deck
-ipcv2

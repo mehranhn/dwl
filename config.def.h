@@ -162,7 +162,6 @@ static const Key keys[] = {
 	/* repeat  modifier                   key          function        argument */
 	{ 0,       MODKEY,                    Key_p,       spawnnotgamemode,{.v = menucmd} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_Return,  spawn,          {.v = termcmd} },
-    { 0,       MODKEY,                    Key_b,       toggle_visibility, {0}},
 	{ 0,       MODKEY,                    Key_j,       focusstack,     {.i = +1} },
 	{ 0,       MODKEY,                    Key_k,       focusstack,     {.i = -1} },
 	{ 0,       MODKEY,                    Key_i,       incnmaster,     {.i = +1} },
