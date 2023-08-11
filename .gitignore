@@ -6,4 +6,3 @@ dwl
 *.patch
 *.rej
 *.orig
-ispc.h
