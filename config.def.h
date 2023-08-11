@@ -75,12 +75,12 @@ static const int tagcount = LENGTH(tags);
 
 /* monitors */
 static const MonitorRule monrules[] = {
-	/* name       mfact nmaster scale layout       rotate/reflect                x    y    width, height, rate              adaptive custom */
+	/* name       mfact nmaster scale layout       rotate/reflect                x    y */
 	/* example of a HiDPI laptop monitor:
-	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL   -1,  -1,   0,     0,      0,                1,       0},
+	{ "eDP-1",    0.5,  1,      2,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL   -1,  -1},
 	*/
 	/* defaults */
-	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   -1, -1,   0,     0,      0,                1,       0},
+	{ NULL,       0.55, 1,      1,    &layouts[0], WL_OUTPUT_TRANSFORM_NORMAL,   -1, -1},
 };
 
 /* keyboard */
@@ -162,7 +162,6 @@ static const Key keys[] = {
 	/* repeat  modifier                   key          function        argument */
 	{ 0,       MODKEY,                    Key_p,       spawnnotgamemode,{.v = menucmd} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_Return,  spawn,          {.v = termcmd} },
-    { 0,       MODKEY,                    Key_b,       toggle_visibility, {0}},
 	{ 0,       MODKEY,                    Key_j,       focusstack,     {.i = +1} },
 	{ 0,       MODKEY,                    Key_k,       focusstack,     {.i = -1} },
 	{ 0,       MODKEY,                    Key_i,       incnmaster,     {.i = +1} },

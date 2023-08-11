@@ -65,7 +65,6 @@
 #include <xcb/xcb_icccm.h>
 #endif
 
-#include "dwl-ipc-unstable-v2-protocol.h"
 #include "util.h"
 
 /* macros */
@@ -149,12 +148,6 @@ typedef struct {
 } Client;
 
 typedef struct {
-    struct wl_list link;
-    struct wl_resource *resource;
-    Monitor *monitor;
-} DwlIpcOutput;
-
-typedef struct {
 	uint8_t shouldrepeat;
 	uint32_t mod;
 	xkb_keycode_t keycode;
@@ -206,7 +199,6 @@ typedef struct {
 
 struct Monitor {
 	struct wl_list link;
-    struct wl_list dwl_ipc_outputs;
 	struct wlr_output *wlr_output;
 	struct wlr_scene_output *scene_output;
 	struct wlr_scene_rect *fullscreen_bg; /* See createmon() for info */
@@ -239,11 +231,6 @@ typedef struct {
 	const Layout *lt;
 	enum wl_output_transform rr;
 	int x, y;
-	int width;
-	int height;
-	float rate;
-	int adaptive_true;
-	int custom;
 } MonitorRule;
 
 struct pointer_constraint {
@@ -320,17 +307,6 @@ static void destroysessionlock(struct wl_listener *listener, void *data);
 static void destroysessionmgr(struct wl_listener *listener, void *data);
 static void destroyshortcutsinhibitmgr(struct wl_listener *listener, void *data);
 static Monitor *dirtomon(enum wlr_direction dir);
-static void dwl_ipc_manager_bind(struct wl_client *client, void *data, uint32_t version, uint32_t id);
-static void dwl_ipc_manager_destroy(struct wl_resource *resource);
-static void dwl_ipc_manager_get_output(struct wl_client *client, struct wl_resource *resource, uint32_t id, struct wl_resource *output);
-static void dwl_ipc_manager_release(struct wl_client *client, struct wl_resource *resource);
-static void dwl_ipc_output_destroy(struct wl_resource *resource);
-static void dwl_ipc_output_printstatus(Monitor *monitor);
-static void dwl_ipc_output_printstatus_to(DwlIpcOutput *ipc_output);
-static void dwl_ipc_output_set_client_tags(struct wl_client *client, struct wl_resource *resource, uint32_t and_tags, uint32_t xor_tags);
-static void dwl_ipc_output_set_layout(struct wl_client *client, struct wl_resource *resource, uint32_t index);
-static void dwl_ipc_output_set_tags(struct wl_client *client, struct wl_resource *resource, uint32_t tagmask, uint32_t toggle_tagset);
-static void dwl_ipc_output_release(struct wl_client *client, struct wl_resource *resource);
 static void focusclient(Client *c, int lift);
 static void focusmon(const Arg *arg);
 static void focusmonutil(Monitor *m);
@@ -374,7 +350,6 @@ static void rendermon(struct wl_listener *listener, void *data);
 static void requeststartdrag(struct wl_listener *listener, void *data);
 static void resize(Client *c, struct wlr_box geo, int interact, int draw_borders);
 static void run(char *startup_cmd);
-static void setmode(struct wlr_output *output, int custom, int width, int height, float refresh_rate);
 static void setcursor(struct wl_listener *listener, void *data);
 static void setfloating(Client *c, int floating);
 static void setfullscreen(Client *c, int fullscreen);
@@ -408,7 +383,6 @@ static void toggleproc(const char *id);
 static void toggleproccmd(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
-static void toggle_visibility(const Arg *arg);
 static void unlocksession(struct wl_listener *listener, void *data);
 static void unmaplayersurfacenotify(struct wl_listener *listener, void *data);
 static void unmapnotify(struct wl_listener *listener, void *data);
@@ -497,8 +471,6 @@ static struct wl_listener cursor_frame = {.notify = cursorframe};
 static struct wl_listener cursor_motion = {.notify = motionrelative};
 static struct wl_listener cursor_motion_absolute = {.notify = motionabsolute};
 static struct wl_listener drag_icon_destroy = {.notify = destroydragicon};
-static struct zdwl_ipc_manager_v2_interface dwl_manager_implementation = {.release = dwl_ipc_manager_release, .get_output = dwl_ipc_manager_get_output};
-static struct zdwl_ipc_output_v2_interface dwl_output_implementation = {.release = dwl_ipc_output_release, .set_tags = dwl_ipc_output_set_tags, .set_layout = dwl_ipc_output_set_layout, .set_client_tags = dwl_ipc_output_set_client_tags};
 static struct wl_listener idle_inhibitor_create = {.notify = createidleinhibitor};
 static struct wl_listener idle_inhibitor_destroy = {.notify = destroyidleinhibitor};
 static struct wl_listener layout_change = {.notify = updatemons};
@@ -897,9 +869,6 @@ cleanupmon(struct wl_listener *listener, void *data)
 	LayerSurface *l, *tmp;
 	int i;
 
-    DwlIpcOutput *ipc_output;
-    wl_list_for_each(ipc_output, &m->dwl_ipc_outputs, link)
-        wl_resource_destroy(ipc_output->resource);
 	for (i = 0; i <= ZWLR_LAYER_SHELL_V1_LAYER_OVERLAY; i++)
 		wl_list_for_each_safe(l, tmp, &m->layers[i], link)
 			wlr_layer_surface_v1_destroy(l->layer_surface);
@@ -1112,18 +1081,11 @@ createmon(struct wl_listener *listener, void *data)
 	/* This event is raised by the backend when a new output (aka a display or
 	 * monitor) becomes available. */
 	struct wlr_output *wlr_output = data;
-	struct wlr_output_mode *wlr_output_mode;
-	int32_t width,height;
-	float rate;
-	int found = 0;
 	const MonitorRule *r;
 	size_t i;
 	Monitor *m = wlr_output->data = ecalloc(1, sizeof(*m));
 	m->wlr_output = wlr_output;
 
-	wlr_output_mode = wlr_output_preferred_mode(wlr_output);
-
-    wl_list_init(&m->dwl_ipc_outputs);
 	wlr_output_init_render(wlr_output, alloc, drw);
 
 	/* Initialize monitor state using configured rules */
@@ -1137,7 +1099,6 @@ createmon(struct wl_listener *listener, void *data)
 	m->tagset[0] = m->tagset[1] = 1;
 	for (r = monrules; r < END(monrules); r++) {
 		if (!r->name || strstr(wlr_output->name, r->name)) {
-			found = 1;
 			m->mfact = r->mfact;
 			m->nmaster = r->nmaster;
 			wlr_output_set_scale(wlr_output, r->scale);
@@ -1146,12 +1107,6 @@ createmon(struct wl_listener *listener, void *data)
 			wlr_output_set_transform(wlr_output, r->rr);
 			m->m.x = r->x;
 			m->m.y = r->y;
-			rate = r->rate > 0 ? r->rate : wlr_output_mode->refresh;
-			width = r->width > 0 ? r->width : wlr_output_mode->width;
-			height = r->height > 0 ? r->height : wlr_output_mode->height;
-			setmode(wlr_output, r->custom, width, height, rate);
-			if (r->adaptive_true)
-				wlr_output_enable_adaptive_sync(wlr_output, 1);
 			break;
 		}
 	}
@@ -1160,8 +1115,7 @@ createmon(struct wl_listener *listener, void *data)
 	 * monitor supports only a specific set of modes. We just pick the
 	 * monitor's preferred mode; a more sophisticated compositor would let
 	 * the user configure it. */
-	if (!found)
-		wlr_output_set_mode(wlr_output, wlr_output_mode);
+    wlr_output_set_mode(wlr_output, wlr_output_preferred_mode(wlr_output));
 
 	/* Set up event listeners */
 	LISTEN(&wlr_output->events.frame, &m->frame, rendermon);
@@ -1173,7 +1127,7 @@ createmon(struct wl_listener *listener, void *data)
 
 	/* Try to enable adaptive sync, note that not all monitors support it.
 	 * wlr_output_commit() will deactivate it in case it cannot be enabled */
-	wlr_output_enable_adaptive_sync(wlr_output, 1);
+	// wlr_output_enable_adaptive_sync(wlr_output, 1);
 	wlr_output_commit(wlr_output);
 
 	wl_list_insert(&mons, &m->link);
@@ -1552,168 +1506,6 @@ dirtomon(enum wlr_direction dir)
 			selmon->wlr_output, selmon->m.x, selmon->m.y)))
 		return next->data;
 	return selmon;
-}
-
-void dwl_ipc_manager_bind(struct wl_client *client, void *data, uint32_t version, uint32_t id) {
-    struct wl_resource *manager_resource = wl_resource_create(client, &zdwl_ipc_manager_v2_interface, version, id);
-    if (!manager_resource) {
-        wl_client_post_no_memory(client);
-        return;
-    }
-    wl_resource_set_implementation(manager_resource, &dwl_manager_implementation, NULL, dwl_ipc_manager_destroy);
-
-    zdwl_ipc_manager_v2_send_tags(manager_resource, tagcount);
-
-    for (int i = 0; i < LENGTH(layouts); i++)
-        zdwl_ipc_manager_v2_send_layout(manager_resource, layouts[i].symbol);
-}
-
-void dwl_ipc_manager_destroy(struct wl_resource *resource) {
-    /* No state to destroy */
-}
-
-void dwl_ipc_manager_get_output(struct wl_client *client, struct wl_resource *resource, uint32_t id, struct wl_resource *output) {
-    DwlIpcOutput *ipc_output;
-    Monitor *monitor = wlr_output_from_resource(output)->data;
-    struct wl_resource *output_resource = wl_resource_create(client, &zdwl_ipc_output_v2_interface, wl_resource_get_version(resource), id);
-    if (!output_resource)
-        return;
-
-    ipc_output = ecalloc(1, sizeof(*ipc_output));
-    ipc_output->resource = output_resource;
-    ipc_output->monitor = monitor;
-    wl_resource_set_implementation(output_resource, &dwl_output_implementation, ipc_output, dwl_ipc_output_destroy);
-    wl_list_insert(&monitor->dwl_ipc_outputs, &ipc_output->link);
-    dwl_ipc_output_printstatus_to(ipc_output);
-}
-
-void dwl_ipc_manager_release(struct wl_client *client, struct wl_resource *resource) {
-    wl_resource_destroy(resource);
-}
-
-static void dwl_ipc_output_destroy(struct wl_resource *resource) {
-    DwlIpcOutput *ipc_output = wl_resource_get_user_data(resource);
-    wl_list_remove(&ipc_output->link);
-    free(ipc_output);
-}
-
-void dwl_ipc_output_printstatus(Monitor *monitor) {
-    DwlIpcOutput *ipc_output;
-    wl_list_for_each(ipc_output, &monitor->dwl_ipc_outputs, link)
-        dwl_ipc_output_printstatus_to(ipc_output);
-}
-
-void dwl_ipc_output_printstatus_to(DwlIpcOutput *ipc_output) {
-    Monitor *monitor = ipc_output->monitor;
-    Client *c, *focused;
-    int tagmask, state, numclients, focused_client, tag;
-    const char *title, *appid;
-    focused = focustop(monitor);
-    zdwl_ipc_output_v2_send_active(ipc_output->resource, monitor == selmon);
-
-    for ( tag = 0 ; tag < tagcount; tag++) {
-        numclients = state = focused_client = 0;
-        tagmask = 1 << tag;
-        if ((tagmask & monitor->tagset[monitor->seltags]) != 0)
-            state |= ZDWL_IPC_OUTPUT_V2_TAG_STATE_ACTIVE;
-
-        wl_list_for_each(c, &clients, link) {
-            if (c->mon != monitor)
-                continue;
-            if (!(c->tags & tagmask))
-                continue;
-            if (c == focused)
-                focused_client = 1;
-            if (c->isurgent)
-                state |= ZDWL_IPC_OUTPUT_V2_TAG_STATE_URGENT;
-
-            numclients++;
-        }
-        zdwl_ipc_output_v2_send_tag(ipc_output->resource, tag, state, numclients, focused_client);
-    }
-    title = focused ? client_get_title(focused) : "";
-    appid = focused ? client_get_appid(focused) : "";
-
-    zdwl_ipc_output_v2_send_layout(ipc_output->resource, monitor->lt[monitor->sellt] - layouts);
-    zdwl_ipc_output_v2_send_title(ipc_output->resource, title ? title : broken);
-    zdwl_ipc_output_v2_send_appid(ipc_output->resource, appid ? appid : broken);
-    zdwl_ipc_output_v2_send_layout_symbol(ipc_output->resource, monitor->ltsymbol);
-    if (wl_resource_get_version(ipc_output->resource) >= ZDWL_IPC_OUTPUT_V2_FULLSCREEN_SINCE_VERSION) {
-        zdwl_ipc_output_v2_send_fullscreen(ipc_output->resource, focused ? focused->isfullscreen : 0);
-    }
-    if (wl_resource_get_version(ipc_output->resource) >= ZDWL_IPC_OUTPUT_V2_FLOATING_SINCE_VERSION) {
-        zdwl_ipc_output_v2_send_floating(ipc_output->resource, focused ? focused->isfloating : 0);
-    }
-    zdwl_ipc_output_v2_send_frame(ipc_output->resource);
-}
-
-void dwl_ipc_output_set_client_tags(struct wl_client *client, struct wl_resource *resource, uint32_t and_tags, uint32_t xor_tags) {
-    DwlIpcOutput *ipc_output;
-    Monitor *monitor;
-    Client *selected_client;
-    unsigned int newtags = 0;
-
-    ipc_output = wl_resource_get_user_data(resource);
-    if (!ipc_output)
-        return;
-
-    monitor = ipc_output->monitor;
-    selected_client = focustop(monitor);
-    if (!selected_client)
-        return;
-
-    newtags = (selected_client->tags & and_tags) ^ xor_tags;
-    if (!newtags)
-        return;
-
-    selected_client->tags = newtags;
-    focusclient(focustop(selmon), 1);
-    arrange(selmon);
-    printstatus();
-}
-
-void dwl_ipc_output_set_layout(struct wl_client *client, struct wl_resource *resource, uint32_t index) {
-    DwlIpcOutput *ipc_output;
-    Monitor *monitor;
-
-    ipc_output = wl_resource_get_user_data(resource);
-    if (!ipc_output)
-        return;
-
-    monitor = ipc_output->monitor;
-    if (index >= LENGTH(layouts))
-        return;
-    if (index != monitor->lt[monitor->sellt] - layouts)
-        monitor->sellt ^= 1;
-
-    monitor->lt[monitor->sellt] = &layouts[index];
-    arrange(monitor);
-    printstatus();
-}
-
-void dwl_ipc_output_set_tags(struct wl_client *client, struct wl_resource *resource, uint32_t tagmask, uint32_t toggle_tagset) {
-    DwlIpcOutput *ipc_output;
-    Monitor *monitor;
-    unsigned int newtags = tagmask & TAGMASK;
-
-    ipc_output = wl_resource_get_user_data(resource);
-    if (!ipc_output)
-        return;
-    monitor = ipc_output->monitor;
-
-    if (!newtags || newtags == monitor->tagset[monitor->seltags])
-        return;
-    if (toggle_tagset)
-        monitor->seltags ^= 1;
-
-    monitor->tagset[monitor->seltags] = newtags;
-    focusclient(focustop(monitor), 1);
-    arrange(monitor);
-    printstatus();
-}
-
-void dwl_ipc_output_release(struct wl_client *client, struct wl_resource *resource) {
-    wl_resource_destroy(resource);
 }
 
 void
@@ -2538,7 +2330,6 @@ printstatus(void)
 		printf("%s tags %u %u %u %u\n", m->wlr_output->name, occ, m->tagset[m->seltags],
 				sel, urg);
 		printf("%s layout %s\n", m->wlr_output->name, m->ltsymbol);
-        dwl_ipc_output_printstatus(m);
 	}
 	fflush(stdout);
 }
@@ -2688,37 +2479,6 @@ run(char *startup_cmd)
 	 * loop configuration to listen to libinput events, DRM events, generate
 	 * frame events at the refresh rate, and so on. */
 	wl_display_run(dpy);
-}
-
-void
-setmode(struct wlr_output *output, int custom, int width, int height, float refresh_rate) {
-	// Not all floating point integers can be represented exactly
-	// as (int)(1000 * mHz / 1000.f)
-	// round() the result to avoid any error
-	struct wlr_output_mode *mode, *best = NULL;
-	int mhz = (int)((refresh_rate * 1000) + 0.5);
-
-	if (wl_list_empty(&output->modes) || custom) {
-		wlr_output_set_custom_mode(output, width, height,
-			refresh_rate > 0 ? mhz : 0);
-		return;
-	}
-
-	wl_list_for_each(mode, &output->modes, link) {
-		if (mode->width == width && mode->height == height) {
-			if (mode->refresh == mhz) {
-				best = mode;
-				break;
-			}
-			// if (best == NULL || mode->refresh > best->refresh) {
-			// 	best = mode;
-			// }
-		}
-	}
-	if (!best) {
-		best = wlr_output_preferred_mode(output);
-	}
-	wlr_output_set_mode(output, best);
 }
 
 void
@@ -3117,7 +2877,6 @@ setup(void)
 	wl_signal_add(&output_mgr->events.test, &output_mgr_test);
 
 	wlr_scene_set_presentation(scene, wlr_presentation_create(dpy, backend));
-    wl_global_create(dpy, &zdwl_ipc_manager_v2_interface, 2, NULL, dwl_ipc_manager_bind);
 
 #ifdef XWAYLAND
 	/*
@@ -3485,12 +3244,6 @@ toggleview(const Arg *arg)
 		arrange(selmon);
 	}
 	printstatus();
-}
-
-void toggle_visibility(const Arg *arg) {
-    DwlIpcOutput *ipc_output;
-    wl_list_for_each(ipc_output, &selmon->dwl_ipc_outputs, link)
-        zdwl_ipc_output_v2_send_toggle_visibility(ipc_output->resource);
 }
 
 void
