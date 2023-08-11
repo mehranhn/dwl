@@ -7,4 +7,3 @@ config.h
 *.patch
 *.rej
 *.orig
-ispc.h
