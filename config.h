@@ -20,27 +20,6 @@ static const unsigned int cursorsize       = 24;
 /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
 static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 0.0};
 
-/* autostart */
-static const char *const autostart[] = {
-	// // "swayidle", NULL,
-	// "lf", "-server", NULL,
-	// "dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
-	// "systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
-	// "/usr/lib/xdg-desktop-portal", "-r", NULL,
-	// "dunst", "~/.config/dunst/dunstrc", NULL,
-	// "sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL,
-	// "udiskie", NULL,
-	// // "kdeconnect-cli", "--refresh", NULL,
-	// // "lxqt-policykit-agent", NULL,
-	// "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL,
-	// "foot", "--server", NULL,
-	// // "nm-applet", NULL,
-	// // "blueman-applet", NULL,
-	// // "asusctl", "profile", "-P", "Quiet", NULL,
-	// "import-gsettings", NULL,
-	NULL /* terminate */
-};
-
 /* pointer constraints */
 static const int allow_constrain      = 1;
 
@@ -103,7 +82,7 @@ static ToggleProc toggleprocs[] = {
 	{ "swaybg",         1,          SIGTERM,     NULL,            NULL,                  NULL,                {"sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL}, 0},
 	{ "udiskie",        1,          SIGTERM,     NULL,            NULL,                  NULL,                {"udiskie", NULL}, 0},
 	{ "polkit-gnome",   1,          SIGTERM,     NULL,            NULL,                  NULL,                {"/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL}, 0},
-	{ "foot",           1,          SIGKILL,     NULL,            NULL,                  NULL,                {"foot", "--server", NULL}, 0},
+	{ "foot",           1,          SIGTERM,     NULL,            NULL,                  NULL,                {"foot", "--server", NULL}, 0},
 	{ "import-gsetting",1,          SIGTERM,     NULL,            NULL,                  NULL,                {"import-gsettings", NULL}, 0},
 };
 
