@@ -22,22 +22,22 @@ static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 0.0};
 
 /* autostart */
 static const char *const autostart[] = {
-	// "swayidle", NULL,
-	"lf", "-server", NULL,
-	"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
-	"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
-	"/usr/lib/xdg-desktop-portal", "-r", NULL,
-	"dunst", "~/.config/dunst/dunstrc", NULL,
-	"sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL,
-	"udiskie", NULL,
-	// "kdeconnect-cli", "--refresh", NULL,
-	// "lxqt-policykit-agent", NULL,
-	"/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL,
-	"foot", "--server", NULL,
-	// "nm-applet", NULL,
-	// "blueman-applet", NULL,
-	// "asusctl", "profile", "-P", "Quiet", NULL,
-	"import-gsettings", NULL,
+	// // "swayidle", NULL,
+	// "lf", "-server", NULL,
+	// "dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
+	// "systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL,
+	// "/usr/lib/xdg-desktop-portal", "-r", NULL,
+	// "dunst", "~/.config/dunst/dunstrc", NULL,
+	// "sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL,
+	// "udiskie", NULL,
+	// // "kdeconnect-cli", "--refresh", NULL,
+	// // "lxqt-policykit-agent", NULL,
+	// "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL,
+	// "foot", "--server", NULL,
+	// // "nm-applet", NULL,
+	// // "blueman-applet", NULL,
+	// // "asusctl", "profile", "-P", "Quiet", NULL,
+	// "import-gsettings", NULL,
 	NULL /* terminate */
 };
 
@@ -93,8 +93,18 @@ static const Rule rules[] = {
 
 static ToggleProc toggleprocs[] = {
 	/* id               autosatrt   signal       notification ID  notification title     notification icon    cmd           not my real location                      0 */
-	{ "swayidle",       1,          SIGTERM,     "8002",          "Swayidle",            "eye-solid",         {"swayidle", NULL},                                     0},
 	{ "gammastep",      1,          SIGTERM,     "8001",          "Blue Light Filter",   "eye-solid",         {"gammastep", "-l", "36.51212:51.1251775", "-r", NULL}, 0},
+	{ "swayidle",       1,          SIGTERM,     "8002",          "Swayidle",            "eye-solid",         {"swayidle", NULL},                                     0},
+	{ "lf",             1,          SIGTERM,     NULL,            NULL,                  NULL,                {"lf", "-server", NULL}, 0},
+	{ "dbus-update",    1,          SIGTERM,     NULL,            NULL,                  NULL,                {"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL}, 0},
+	{ "systemctl-env",  1,          SIGTERM,     NULL,            NULL,                  NULL,                {"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL}, 0},
+	{ "desktop-portal", 1,          SIGTERM,     NULL,            NULL,                  NULL,                {"/usr/lib/xdg-desktop-portal", "-r", NULL}, 0},
+	{ "dunst",          1,          SIGTERM,     NULL,            NULL,                  NULL,                {"dunst", "~/.config/dunst/dunstrc", NULL}, 0},
+	{ "swaybg",         1,          SIGTERM,     NULL,            NULL,                  NULL,                {"sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL}, 0},
+	{ "udiskie",        1,          SIGTERM,     NULL,            NULL,                  NULL,                {"udiskie", NULL}, 0},
+	{ "polkit-gnome",   1,          SIGTERM,     NULL,            NULL,                  NULL,                {"/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL}, 0},
+	{ "foot",           1,          SIGKILL,     NULL,            NULL,                  NULL,                {"foot", "--server", NULL}, 0},
+	{ "import-gsetting",1,          SIGTERM,     NULL,            NULL,                  NULL,                {"import-gsettings", NULL}, 0},
 };
 
 /* layout(s) */
