@@ -804,6 +804,7 @@ checkidleinhibitor(struct wlr_surface *exclude)
 void
 cleanup(void)
 {
+    size_t i;
 #ifdef XWAYLAND
 	wlr_xwayland_destroy(xwayland);
 #endif
@@ -812,6 +813,16 @@ cleanup(void)
 		kill(child_pid, SIGTERM);
 		waitpid(child_pid, NULL, 0);
 	}
+
+    // kill toggleproc child processes
+	for (i = 0; i < LENGTH(toggleprocs); i++) {
+		if (0 < toggleprocs[i].pid) {
+			kill(toggleprocs[i].pid, toggleprocs[i].signal);
+			waitpid(toggleprocs[i].pid, NULL, 0);
+			toggleprocs[i].pid = 0;
+		}
+	}
+
 	wlr_backend_destroy(backend);
 	wlr_scene_node_destroy(&scene->tree.node);
 	wlr_renderer_destroy(drw);
@@ -2309,16 +2320,6 @@ powermgrsetmodenotify(struct wl_listener *listener, void *data)
 void
 quit(const Arg *arg)
 {
-	size_t i;
-
-	for (i = 0; i < LENGTH(toggleprocs); i++) {
-		if (0 < toggleprocs[i].pid) {
-			kill(toggleprocs[i].pid, toggleprocs[i].signal);
-			waitpid(toggleprocs[i].pid, NULL, 0);
-			toggleprocs[i].pid = 0;
-		}
-	}
-
 	wl_display_terminate(dpy);
 }
 
