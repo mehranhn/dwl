@@ -271,7 +271,6 @@ static void arrange(Monitor *m);
 static void arrangelayer(Monitor *m, struct wl_list *list,
 		struct wlr_box *usable_area, int exclusive);
 static void arrangelayers(Monitor *m);
-static void autostartexec(void);
 static void autostarttoggleprocs(void);
 static void axisnotify(struct wl_listener *listener, void *data);
 static void buttonpress(struct wl_listener *listener, void *data);
@@ -526,9 +525,6 @@ struct Pertag {
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
-static pid_t *autostart_pids;
-static size_t autostart_len;
-
 /* function implementations */
 void
 applybounds(Client *c, struct wlr_box *bbox)
@@ -684,27 +680,6 @@ arrangelayers(Monitor *m)
 				return;
 			}
 		}
-	}
-}
-
-void
-autostartexec(void) {
-	const char *const *p;
-	size_t i = 0;
-
-	/* count entries */
-	for (p = autostart; *p; autostart_len++, p++)
-		while (*++p);
-
-	autostart_pids = calloc(autostart_len, sizeof(pid_t));
-	for (p = autostart; *p; i++, p++) {
-		if ((autostart_pids[i] = fork()) == 0) {
-			setsid();
-			execvp(*p, (char *const *)p);
-			die("dwl: execvp %s:", *p);
-		}
-		/* skip arguments */
-		while (*++p);
 	}
 }
 
@@ -1697,18 +1672,6 @@ handlesig(int signo)
                     break;
                 }
             }
-
-			if (!(p = autostart_pids))
-				continue;
-
-			lim = &p[autostart_len];
-
-			for (; p < lim; p++) {
-				if (*p == in.si_pid) {
-					*p = -1;
-					break;
-				}
-			}
 		}
 	} else if (signo == SIGINT || signo == SIGTERM) {
 		quit(NULL);
@@ -2348,14 +2311,6 @@ quit(const Arg *arg)
 {
 	size_t i;
 
-	/* kill child processes */
-	for (i = 0; i < autostart_len; i++) {
-		if (0 < autostart_pids[i]) {
-			kill(autostart_pids[i], SIGKILL);
-			waitpid(autostart_pids[i], NULL, 0);
-		}
-	}
-
 	for (i = 0; i < LENGTH(toggleprocs); i++) {
 		if (0 < toggleprocs[i].pid) {
 			kill(toggleprocs[i].pid, toggleprocs[i].signal);
@@ -2441,7 +2396,6 @@ run(char *startup_cmd)
 		die("startup: backend_start");
 
 	/* Now that the socket exists and the backend is started, run the startup command */
-	autostartexec();
 	autostarttoggleprocs();
 	if (startup_cmd) {
 		int piperw[2];
