@@ -366,7 +366,6 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
 static void setpsel(struct wl_listener *listener, void *data);
 static void setsel(struct wl_listener *listener, void *data);
 static void setup(void);
-static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void spawnnotgamemode(const Arg *arg);
 static void spawnorfocus(const Arg *arg);
@@ -2893,49 +2892,6 @@ setup(void)
 		fprintf(stderr, "failed to setup XWayland X server, continuing without it\n");
 	}
 #endif
-}
-
-void
-sigchld(int unused)
-{
-	siginfo_t in;
-	/* We should be able to remove this function in favor of a simple
-	 *	struct sigaction sa = {.sa_handler = SIG_IGN};
-	 * 	sigaction(SIGCHLD, &sa, NULL);
-	 * but the Xwayland implementation in wlroots currently prevents us from
-	 * setting our own disposition for SIGCHLD.
-	 */
-	/* WNOWAIT leaves the child in a waitable state, in case this is the
-	 * XWayland process
-	 */
-	while (!waitid(P_ALL, 0, &in, WEXITED|WNOHANG|WNOWAIT) && in.si_pid
-#ifdef XWAYLAND
-			&& (!xwayland || in.si_pid != xwayland->server->pid)
-#endif
-    ) {
-		pid_t *p, *lim;
-		waitpid(in.si_pid, NULL, 0);
-		if (in.si_pid == child_pid)
-			child_pid = -1;
-
-        for (int i = 0; i < LENGTH(toggleprocs); i++) {
-            if (toggleprocs[i].pid == in.si_pid) {
-                toggleprocs[i].pid = 0;
-                break;
-            }
-        }
-
-		if (!(p = autostart_pids))
-			continue;
-		lim = &p[autostart_len];
-
-		for (; p < lim; p++) {
-			if (*p == in.si_pid) {
-				*p = -1;
-				break;
-			}
-		}
-	}
 }
 
 void
