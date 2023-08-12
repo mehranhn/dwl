@@ -79,7 +79,7 @@ static ToggleProc toggleprocs[] = {
 	{ "systemctl-env",  1,          SIGTERM,     NULL,            NULL,                  NULL,                {"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL}, 0},
 	{ "desktop-portal", 1,          SIGTERM,     NULL,            NULL,                  NULL,                {"/usr/lib/xdg-desktop-portal", "-r", NULL}, 0},
 	{ "dunst",          1,          SIGTERM,     NULL,            NULL,                  NULL,                {"dunst", "~/.config/dunst/dunstrc", NULL}, 0},
-	{ "swaybg",         1,          SIGTERM,     NULL,            NULL,                  NULL,                {"sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_7.jpg -m fill -o '*'", NULL}, 0},
+	{ "swaybg",         1,          SIGTERM,     NULL,            NULL,                  NULL,                {"sh", "-c", "swaybg -i ~/.src/wallpapers/wallpaper_07.jpg -m fill -o '*'", NULL}, 0},
 	{ "udiskie",        1,          SIGTERM,     NULL,            NULL,                  NULL,                {"udiskie", NULL}, 0},
 	{ "polkit-gnome",   1,          SIGTERM,     NULL,            NULL,                  NULL,                {"/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1", NULL}, 0},
 	{ "foot",           1,          SIGTERM,     NULL,            NULL,                  NULL,                {"foot", "--server", NULL}, 0},
