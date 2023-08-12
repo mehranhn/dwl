@@ -271,7 +271,6 @@ static void arrange(Monitor *m);
 static void arrangelayer(Monitor *m, struct wl_list *list,
 		struct wlr_box *usable_area, int exclusive);
 static void arrangelayers(Monitor *m);
-static void autostartexec(void);
 static void autostarttoggleprocs(void);
 static void axisnotify(struct wl_listener *listener, void *data);
 static void buttonpress(struct wl_listener *listener, void *data);
@@ -366,7 +365,6 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
 static void setpsel(struct wl_listener *listener, void *data);
 static void setsel(struct wl_listener *listener, void *data);
 static void setup(void);
-static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void spawnnotgamemode(const Arg *arg);
 static void spawnorfocus(const Arg *arg);
@@ -527,9 +525,6 @@ struct Pertag {
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
-static pid_t *autostart_pids;
-static size_t autostart_len;
-
 /* function implementations */
 void
 applybounds(Client *c, struct wlr_box *bbox)
@@ -689,27 +684,6 @@ arrangelayers(Monitor *m)
 }
 
 void
-autostartexec(void) {
-	const char *const *p;
-	size_t i = 0;
-
-	/* count entries */
-	for (p = autostart; *p; autostart_len++, p++)
-		while (*++p);
-
-	autostart_pids = calloc(autostart_len, sizeof(pid_t));
-	for (p = autostart; *p; i++, p++) {
-		if ((autostart_pids[i] = fork()) == 0) {
-			setsid();
-			execvp(*p, (char *const *)p);
-			die("dwl: execvp %s:", *p);
-		}
-		/* skip arguments */
-		while (*++p);
-	}
-}
-
-void
 autostarttoggleprocs(void) {
     fprintf(stderr, "1\n");
 	for (int i = 0; i < LENGTH(toggleprocs); i++) {
@@ -830,6 +804,7 @@ checkidleinhibitor(struct wlr_surface *exclude)
 void
 cleanup(void)
 {
+    size_t i;
 #ifdef XWAYLAND
 	wlr_xwayland_destroy(xwayland);
 #endif
@@ -838,6 +813,16 @@ cleanup(void)
 		kill(child_pid, SIGTERM);
 		waitpid(child_pid, NULL, 0);
 	}
+
+    // kill toggleproc child processes
+	for (i = 0; i < LENGTH(toggleprocs); i++) {
+		if (0 < toggleprocs[i].pid) {
+			kill(toggleprocs[i].pid, toggleprocs[i].signal);
+			waitpid(toggleprocs[i].pid, NULL, 0);
+			toggleprocs[i].pid = 0;
+		}
+	}
+
 	wlr_backend_destroy(backend);
 	wlr_scene_node_destroy(&scene->tree.node);
 	wlr_renderer_destroy(drw);
@@ -1698,18 +1683,6 @@ handlesig(int signo)
                     break;
                 }
             }
-
-			if (!(p = autostart_pids))
-				continue;
-
-			lim = &p[autostart_len];
-
-			for (; p < lim; p++) {
-				if (*p == in.si_pid) {
-					*p = -1;
-					break;
-				}
-			}
 		}
 	} else if (signo == SIGINT || signo == SIGTERM) {
 		quit(NULL);
@@ -2347,24 +2320,6 @@ powermgrsetmodenotify(struct wl_listener *listener, void *data)
 void
 quit(const Arg *arg)
 {
-	size_t i;
-
-	/* kill child processes */
-	for (i = 0; i < autostart_len; i++) {
-		if (0 < autostart_pids[i]) {
-			kill(autostart_pids[i], SIGKILL);
-			waitpid(autostart_pids[i], NULL, 0);
-		}
-	}
-
-	for (i = 0; i < LENGTH(toggleprocs); i++) {
-		if (0 < toggleprocs[i].pid) {
-			kill(toggleprocs[i].pid, toggleprocs[i].signal);
-			waitpid(toggleprocs[i].pid, NULL, 0);
-			toggleprocs[i].pid = 0;
-		}
-	}
-
 	wl_display_terminate(dpy);
 }
 
@@ -2442,7 +2397,6 @@ run(char *startup_cmd)
 		die("startup: backend_start");
 
 	/* Now that the socket exists and the backend is started, run the startup command */
-	autostartexec();
 	autostarttoggleprocs();
 	if (startup_cmd) {
 		int piperw[2];
@@ -2893,49 +2847,6 @@ setup(void)
 		fprintf(stderr, "failed to setup XWayland X server, continuing without it\n");
 	}
 #endif
-}
-
-void
-sigchld(int unused)
-{
-	siginfo_t in;
-	/* We should be able to remove this function in favor of a simple
-	 *	struct sigaction sa = {.sa_handler = SIG_IGN};
-	 * 	sigaction(SIGCHLD, &sa, NULL);
-	 * but the Xwayland implementation in wlroots currently prevents us from
-	 * setting our own disposition for SIGCHLD.
-	 */
-	/* WNOWAIT leaves the child in a waitable state, in case this is the
-	 * XWayland process
-	 */
-	while (!waitid(P_ALL, 0, &in, WEXITED|WNOHANG|WNOWAIT) && in.si_pid
-#ifdef XWAYLAND
-			&& (!xwayland || in.si_pid != xwayland->server->pid)
-#endif
-    ) {
-		pid_t *p, *lim;
-		waitpid(in.si_pid, NULL, 0);
-		if (in.si_pid == child_pid)
-			child_pid = -1;
-
-        for (int i = 0; i < LENGTH(toggleprocs); i++) {
-            if (toggleprocs[i].pid == in.si_pid) {
-                toggleprocs[i].pid = 0;
-                break;
-            }
-        }
-
-		if (!(p = autostart_pids))
-			continue;
-		lim = &p[autostart_len];
-
-		for (; p < lim; p++) {
-			if (*p == in.si_pid) {
-				*p = -1;
-				break;
-			}
-		}
-	}
 }
 
 void
