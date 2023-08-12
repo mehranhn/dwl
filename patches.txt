@@ -2,7 +2,6 @@ makedesktop
 alwayscenter
 attachbottom
 smartborders
-autostart
 keycodes
 vanitygaps
 customfloat
