@@ -38,7 +38,6 @@ static const Rule rules[] = {
 	{ "freetube",       "FreeTube",                                 NULL,       1 << 1,       0,           SM,        50,  50,  500, 500,   {NULL} },
 	{ "mranger",        "Mranger",                                  NULL,       1 << 2,       0,           LM,        50,  50,  500, 500,   {"footclient", "-a", "Mranger", "-T", "ranger", "-L", "ranger", NULL} },
 	{ "mlf",            "Mlf",                                      NULL,       1 << 2,       0,           LM,        50,  50,  500, 500,   {"footclient", "-a", "Mlf", "-T", "lf", "-L", "lf", NULL} },
-	// { "mpv",            "mpv",                                      NULL,       1 << 2,       0,           SM,        50,  50,  500, 500,   {NULL} },
 	{ "code-oss",       "code-oss",                                 NULL,       1 << 3,       0,           SM,        50,  50,  500, 500,   {"code", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "vscodium",       "VSCodium",                                 NULL,       1 << 3,       0,           SM,        50,  50,  500, 500,   {"vscodium", "--enable-features=UseOzonePlatform", "--ozone-platform=wayland", NULL} },
 	{ "mnvim",          "Mnvim",                                    NULL,       1 << 3,       0,           LM,        50,  50,  500, 500,   {"footclient", "-a", "Mnvim", "-T", "Neovim", "-L", "tmux", "new", "-s", "nvim", "-n", "nvim", "-AD", "nvim", NULL} },
