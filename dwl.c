@@ -2867,16 +2867,17 @@ spawnorfocus(const Arg *arg)
 {
 	const char *name;
 	const Rule *r = NULL;
-	char found = 0;
+	char found = 0, rule_found = 0;
 	Client *c = NULL;
 
 	name = ((char*)arg->v);
 	for (r = rules; r < END(rules); r++) {
 		if (!strcmp(name, r->identifier)) {
+            rule_found = 1;
 			break;
 		}
 	}
-	if (!r)
+	if (!rule_found)
 		return;
 	wl_list_for_each(c, &clients, link) {
 		const char *appid, *title;
