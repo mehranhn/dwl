@@ -1596,6 +1596,7 @@ focusmonutil(Monitor *m)
 			cxd = cx - mx;
 			cyd = cy - my;
 			wlr_cursor_warp(cursor, NULL, selmon->m.x + cxd, selmon->m.y + cyd);
+            motionnotify(0);
 			break;
 		}
 	}
