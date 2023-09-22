@@ -19,3 +19,4 @@ outputPowerManagement
 keyboardshortcutsinhibit
 virtualpointer
 deck
+pointerGesturesUnstableV1
