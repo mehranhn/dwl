@@ -21,3 +21,4 @@ virtualpointer
 deck
 pointerGesturesUnstableV1
 shiftview
+gestures

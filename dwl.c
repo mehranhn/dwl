@@ -87,6 +87,8 @@ enum { LyrBg, LyrBottom, LyrTile, LyrFloat, LyrFS, LyrTop, LyrOverlay, LyrBlock,
 enum { NetWMWindowTypeDialog, NetWMWindowTypeSplash, NetWMWindowTypeToolbar,
 	NetWMWindowTypeUtility, NetLast }; /* EWMH atoms */
 #endif
+enum { SWIPE_3_LEFT, SWIPE_3_RIGHT, SWIPE_3_DOWN, SWIPE_3_UP,
+	SWIPE_4_LEFT, SWIPE_4_RIGHT, SWIPE_4_DOWN, SWIPE_4_UP };
 
 typedef union {
 	int i;
@@ -101,6 +103,12 @@ typedef struct {
 	void (*func)(const Arg *);
 	const Arg arg;
 } Button;
+
+typedef struct {
+	unsigned int motion;
+	void (*func)(const Arg *);
+	const Arg arg;
+} Gesture;
 
 typedef struct {
 	const char *identifier;
@@ -472,6 +480,10 @@ struct wlr_pointer_constraint_v1 *active_constraint;
 static struct wl_listener constraint_commit;
 struct wlr_relative_pointer_manager_v1 *relative_pointer_manager;
 
+static uint32_t swipe_fingers = 0;
+static double swipe_dx = 0;
+static double swipe_dy = 0;
+
 /* global event handlers */
 static struct wl_listener cursor_axis = {.notify = axisnotify};
 static struct wl_listener cursor_button = {.notify = buttonpress};
@@ -540,6 +552,8 @@ struct Pertag {
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
+
+static const unsigned int abzsquare = swipe_min_threshold * swipe_min_threshold;
 
 /* function implementations */
 void
@@ -793,9 +807,18 @@ swipe_begin(struct wl_listener *listener, void *data)
 {
 	struct wlr_pointer_swipe_begin_event *event = data;
 
+	if (event->fingers == 3 || event->fingers == 4) {
+		swipe_fingers = event->fingers;
+		// Reset swipe distance at the beginning of a swipe
+		swipe_dx = 0;
+		swipe_dy = 0;
+
+		return;
+	}
+
 	// Forward swipe begin event to client
 	wlr_pointer_gestures_v1_send_swipe_begin(
-		pointer_gestures, 
+		pointer_gestures,
 		seat,
 		event->time_msec,
 		event->fingers
@@ -807,9 +830,17 @@ swipe_update(struct wl_listener *listener, void *data)
 {
 	struct wlr_pointer_swipe_update_event *event = data;
 
+	if (swipe_fingers) {
+		// Accumulate swipe distance
+		swipe_dx += event->dx;
+		swipe_dy += event->dy;
+
+		return;
+	}
+
 	// Forward swipe update event to client
 	wlr_pointer_gestures_v1_send_swipe_update(
-		pointer_gestures, 
+		pointer_gestures,
 		seat,
 		event->time_msec,
 		event->dx,
@@ -821,10 +852,56 @@ void
 swipe_end(struct wl_listener *listener, void *data)
 {
 	struct wlr_pointer_swipe_end_event *event = data;
+	const Gesture *g;
+	unsigned int motion;
+	unsigned int adx = fabs(swipe_dx);
+	unsigned int ady = fabs(swipe_dy);
+	char found = 0;
+
+	if (swipe_fingers) {
+		if (event->cancelled) {
+			swipe_fingers = 0;
+			return;
+		}
+
+		// Require absolute distance movement beyond a small thresh-hold
+		if (adx * adx + ady * ady < abzsquare) {
+			swipe_fingers = 0;
+			return;
+		}
+
+		if (swipe_fingers == 3) {
+			if (adx > ady) {
+				motion = swipe_dx < 0 ? SWIPE_3_LEFT : SWIPE_3_RIGHT;
+			} else {
+				motion = swipe_dy < 0 ? SWIPE_3_UP : SWIPE_3_DOWN;
+			}
+		// 4 fingers
+		} else {
+			if (adx > ady) {
+				motion = swipe_dx < 0 ? SWIPE_4_LEFT : SWIPE_4_RIGHT;
+			} else {
+				motion = swipe_dy < 0 ? SWIPE_4_UP : SWIPE_4_DOWN;
+			}
+		}
+
+		for (g = gestures; g < END(gestures); g++) {
+			if (motion == g->motion && g->func) {
+				found = 1;
+				g->func(&g->arg);
+			}
+		}
+
+		if (found) {
+			swipe_fingers = 0;
+			return;
+		}
+	}
+	swipe_fingers = 0;
 
 	// Forward swipe end event to client
 	wlr_pointer_gestures_v1_send_swipe_end(
-		pointer_gestures, 
+		pointer_gestures,
 		seat,
 		event->time_msec,
 		event->cancelled
@@ -838,7 +915,7 @@ pinch_begin(struct wl_listener *listener, void *data)
 
 	// Forward pinch begin event to client
 	wlr_pointer_gestures_v1_send_pinch_begin(
-		pointer_gestures, 
+		pointer_gestures,
 		seat,
 		event->time_msec,
 		event->fingers
@@ -1889,7 +1966,7 @@ inputdevice(struct wl_listener *listener, void *data)
 		/* TODO handle other input device types */
 		break;
 	}
-	
+
 	updatecapabilities();
 }
 
@@ -3147,7 +3224,7 @@ tile(Monitor *m)
 			n++;
 	if (n == 0)
 		return;
-	
+
 	if (smartgaps == n) {
 		oe = 0; // outer gaps disabled
 	}
