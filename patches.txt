@@ -20,4 +20,4 @@ keyboardshortcutsinhibit
 virtualpointer
 deck
 pointerGesturesUnstableV1
-patch shiftview
+shiftview
