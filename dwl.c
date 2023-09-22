@@ -372,6 +372,8 @@ static void setmon(Client *c, Monitor *m, uint32_t newtags);
 static void setpsel(struct wl_listener *listener, void *data);
 static void setsel(struct wl_listener *listener, void *data);
 static void setup(void);
+static void shiftview(const Arg *arg);
+static void shiftviewvisible(const Arg *arg);
 static void spawn(const Arg *arg);
 static void spawnnotgamemode(const Arg *arg);
 static void spawnorfocus(const Arg *arg);
@@ -2950,6 +2952,54 @@ setup(void)
 		fprintf(stderr, "failed to setup XWayland X server, continuing without it\n");
 	}
 #endif
+}
+
+void
+shiftview(const Arg *arg)
+{
+	Arg a;
+	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
+
+	if (arg->i > 0) // left circular shift
+		a.i = (curseltags << arg->i) | (curseltags >> (tagcount - arg->i));
+	else // right circular shift
+		a.i = curseltags >> (- arg->i) | (curseltags << (tagcount + arg->i));
+
+	view(&a);
+}
+
+void
+shiftviewvisible(const Arg *arg)
+{
+	Arg a;
+	Client *c;
+	size_t ntags = tagcount;
+	bool visible = false;
+	int i = arg->i;
+	int count = 0;
+	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
+
+	do {
+		if (i > 0) // left circular shift
+			nextseltags = (curseltags << i) | (curseltags >> (ntags - i));
+		else // right circular shift
+			nextseltags = curseltags >> (- i) | (curseltags << (ntags + i));
+
+		// Check if the tag is visible
+		wl_list_for_each(c, &clients, link) {
+			if (c->mon == selmon && nextseltags & c->tags) {
+				visible = true;
+				break;
+			}
+		}
+
+		i += arg->i;
+	} while (!visible && ++count <= ntags);
+
+	if (count <= ntags) {
+		a.i = nextseltags;
+		view(&a);
+	}
 }
 
 void
