@@ -109,7 +109,7 @@ typedef struct {
 	const char *notificationid;
 	const char *notificationtitle;
 	const char *notificationicon;
-    const char *cmd[32];
+	const char *cmd[32];
 	pid_t pid;
 } ToggleProc;
 
@@ -193,9 +193,9 @@ typedef struct {
 } Layout;
 
 typedef struct {
-    const Layout *layout;
-    float mfacts;
-    int nmasters;
+	const Layout *layout;
+	float mfacts;
+	int nmasters;
 } TagData;
 
 struct Monitor {
@@ -701,11 +701,8 @@ arrangelayers(Monitor *m)
 
 void
 autostarttoggleprocs(void) {
-    fprintf(stderr, "1\n");
 	for (int i = 0; i < LENGTH(toggleprocs); i++) {
-        fprintf(stderr, "2: %d\n", i);
 		if (toggleprocs[i].autostart) {
-            fprintf(stderr, "3: %d\n", i);
 			pid_t pid = fork();
 			if (pid == -1)
 				continue;
@@ -714,7 +711,6 @@ autostarttoggleprocs(void) {
 				execvp(toggleprocs[i].cmd[0], (char *const *) toggleprocs[i].cmd);
 				die("dwl: execvp %s:", toggleprocs[i].cmd[0]);
 			} else {
-                fprintf(stderr, "5: %d\n", pid);
 				toggleprocs[i].pid = pid;
 			}
 		}
@@ -908,7 +904,7 @@ checkidleinhibitor(struct wlr_surface *exclude)
 void
 cleanup(void)
 {
-    size_t i;
+	size_t i;
 #ifdef XWAYLAND
 	wlr_xwayland_destroy(xwayland);
 #endif
@@ -918,7 +914,7 @@ cleanup(void)
 		waitpid(child_pid, NULL, 0);
 	}
 
-    // kill toggleproc child processes
+	// kill toggleproc child processes
 	for (i = 0; i < LENGTH(toggleprocs); i++) {
 		if (0 < toggleprocs[i].pid) {
 			kill(toggleprocs[i].pid, toggleprocs[i].signal);
@@ -1198,7 +1194,7 @@ createmon(struct wl_listener *listener, void *data)
 	 * monitor supports only a specific set of modes. We just pick the
 	 * monitor's preferred mode; a more sophisticated compositor would let
 	 * the user configure it. */
-    wlr_output_set_mode(wlr_output, wlr_output_preferred_mode(wlr_output));
+	wlr_output_set_mode(wlr_output, wlr_output_preferred_mode(wlr_output));
 
 	/* Set up event listeners */
 	LISTEN(&wlr_output->events.frame, &m->frame, rendermon);
@@ -1391,7 +1387,7 @@ destroypointerconstraint(struct wl_listener *listener, void *data)
 }
 
 void createshortcutsinhibitor(struct wl_listener *listener, void *data) {
-    wlr_keyboard_shortcuts_inhibitor_v1_activate(data);
+	wlr_keyboard_shortcuts_inhibitor_v1_activate(data);
 }
 
 void
@@ -1427,15 +1423,15 @@ deck(Monitor *m)
 		oe = 0; // outer gaps disabled
 	}
 
-    if (smartborders == n)
-        draw_borders = 0;
+	if (smartborders == n)
+		draw_borders = 0;
 
 	if (n > m->nmaster)
-        mw = m->nmaster ? (m->w.width + m->gappiv*ie) * m->mfact : 0;
+		mw = m->nmaster ? (m->w.width + m->gappiv*ie) * m->mfact : 0;
 	else
 		mw = m->w.width - 2*m->gappov*oe + m->gappiv*ie;
 	i = 0;
-    my = m->gappoh*oe;
+	my = m->gappoh*oe;
 	wl_list_for_each(c, &clients, link) {
 		if (!VISIBLEON(c, m) || c->isfloating || c->isfullscreen)
 			continue;
@@ -1443,7 +1439,7 @@ deck(Monitor *m)
 			// resize(c, (struct wlr_box){.x = m->w.x, .y = m->w.y + my, .width = mw,
 			// 	.height = (m->w.height - my) / (MIN(n, m->nmaster) - i)}, 0, draw_borders);
 			// my += c->geom.height;
-            r = MIN(n, m->nmaster) - i;
+			r = MIN(n, m->nmaster) - i;
 			h = (m->w.height - my - m->gappoh*oe - m->gappih*ie * (r - 1)) / r;
 			resize(c, (struct wlr_box){.x = m->w.x + m->gappov*oe, .y = m->w.y + my,
 				.width = mw - m->gappiv*ie, .height = h}, 0, draw_borders);
@@ -1572,8 +1568,8 @@ destroysessionmgr(struct wl_listener *listener, void *data)
 }
 
 void destroyshortcutsinhibitmgr(struct wl_listener *listener, void *data) {
-    wl_list_remove(&new_shortcuts_inhibitor.link);
-    wl_list_remove(&shortcuts_inhibit_mgr_destroy.link);
+	wl_list_remove(&new_shortcuts_inhibitor.link);
+	wl_list_remove(&shortcuts_inhibit_mgr_destroy.link);
 }
 
 Monitor *
@@ -1700,7 +1696,7 @@ focusmonutil(Monitor *m)
 			cxd = cx - mx;
 			cyd = cy - my;
 			wlr_cursor_warp(cursor, NULL, selmon->m.x + cxd, selmon->m.y + cyd);
-            motionnotify(0);
+			motionnotify(0);
 			break;
 		}
 	}
@@ -1777,12 +1773,12 @@ handlesig(int signo)
 			if (in.si_pid == child_pid)
 				child_pid = -1;
 
-            for (int i = 0; i < LENGTH(toggleprocs); i++) {
-                if (toggleprocs[i].pid == in.si_pid) {
-                    toggleprocs[i].pid = 0;
-                    break;
-                }
-            }
+			for (int i = 0; i < LENGTH(toggleprocs); i++) {
+				if (toggleprocs[i].pid == in.si_pid) {
+					toggleprocs[i].pid = 0;
+					break;
+				}
+			}
 		}
 	} else if (signo == SIGINT || signo == SIGTERM) {
 		quit(NULL);
@@ -1937,7 +1933,7 @@ keypress(struct wl_listener *listener, void *data)
 	 * attempt to process a compositor keybinding. */
 	if (!locked && !input_inhibit_mgr->active_inhibitor
 			&& event->state == WL_KEYBOARD_KEY_STATE_PRESSED
-            && wl_list_empty(&shortcuts_inhibit_mgr->inhibitors))
+			&& wl_list_empty(&shortcuts_inhibit_mgr->inhibitors))
 		handled = keybinding(mods, keycode);
 
 	if (handled == 3 && kb->wlr_keyboard->repeat_info.delay > 0) {
@@ -1982,12 +1978,12 @@ keyrepeat(void *data)
 {
 	Keyboard *kb = data;
 	if (kb->keycode || kb->wlr_keyboard->repeat_info.rate <= 0)
-        return 0;
+		return 0;
 
-    wl_event_source_timer_update(kb->key_repeat_source,
-            1000 / kb->wlr_keyboard->repeat_info.rate);
+	wl_event_source_timer_update(kb->key_repeat_source,
+			1000 / kb->wlr_keyboard->repeat_info.rate);
 
-    keybinding(kb->mods, kb->keycode);
+	keybinding(kb->mods, kb->keycode);
 
 	return 0;
 }
@@ -2087,7 +2083,7 @@ mapnotify(struct wl_listener *listener, void *data)
 	else
 		wl_list_insert(&clients, &c->link);
 #else
-    wl_list_insert(&clients, &c->link);
+	wl_list_insert(&clients, &c->link);
 #endif
 	wl_list_insert(&fstack, &c->flink);
 
@@ -2221,7 +2217,7 @@ motionrelative(struct wl_listener *listener, void *data)
 	/* This event is forwarded by the cursor when a pointer emits a _relative_
 	 * pointer motion event (i.e. a delta) */
 	struct wlr_pointer_motion_event *event = data;
-    Client *c = focustop(selmon);
+	Client *c = focustop(selmon);
 	/* The cursor doesn't move unless we tell it to. The cursor automatically
 	 * handles constraining the motion to the output layout, as well as any
 	 * special configuration applied for the specific input device which
@@ -2232,10 +2228,9 @@ motionrelative(struct wl_listener *listener, void *data)
 		seat, (uint64_t)event->time_msec * 1000,
 		event->delta_x, event->delta_y, event->unaccel_dx, event->unaccel_dy);
 
-    
 	if (!active_constraint || c == NULL || active_constraint->surface != client_surface(c)) {
-        wlr_cursor_move(cursor, &event->pointer->base,
-            event->delta_x, event->delta_y);
+		wlr_cursor_move(cursor, &event->pointer->base,
+			event->delta_x, event->delta_y);
 	}
 	motionnotify(event->time_msec);
 }
@@ -2853,9 +2848,9 @@ setup(void)
 			(float [4]){0.1, 0.1, 0.1, 1.0});
 	wlr_scene_node_set_enabled(&locked_bg->node, 0);
 
-    shortcuts_inhibit_mgr = wlr_keyboard_shortcuts_inhibit_v1_create(dpy);
-    wl_signal_add(&shortcuts_inhibit_mgr->events.new_inhibitor, &new_shortcuts_inhibitor);
-    wl_signal_add(&shortcuts_inhibit_mgr->events.destroy, &shortcuts_inhibit_mgr_destroy);
+	shortcuts_inhibit_mgr = wlr_keyboard_shortcuts_inhibit_v1_create(dpy);
+	wl_signal_add(&shortcuts_inhibit_mgr->events.new_inhibitor, &new_shortcuts_inhibitor);
+	wl_signal_add(&shortcuts_inhibit_mgr->events.destroy, &shortcuts_inhibit_mgr_destroy);
 
 	/* Use decoration protocols to negotiate server-side decorations */
 	wlr_server_decoration_manager_set_default_mode(
@@ -3026,7 +3021,7 @@ spawnorfocus(const Arg *arg)
 	name = ((char*)arg->v);
 	for (r = rules; r < END(rules); r++) {
 		if (!strcmp(name, r->identifier)) {
-            rule_found = 1;
+			rule_found = 1;
 			break;
 		}
 	}
@@ -3288,29 +3283,29 @@ toggleview(const Arg *arg)
 	if (!newtagset)
 		return;
 
-    selmon->tagset[selmon->seltags] = newtagset;
+	selmon->tagset[selmon->seltags] = newtagset;
 
-    if (newtagset == ~0) {
-        selmon->pertag->prevtag = selmon->pertag->curtag;
-        selmon->pertag->curtag = 0;
-    }
+	if (newtagset == ~0) {
+		selmon->pertag->prevtag = selmon->pertag->curtag;
+		selmon->pertag->curtag = 0;
+	}
 
-    /* test if the user did not select the same tag */
-    if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {
-        selmon->pertag->prevtag = selmon->pertag->curtag;
-        for (i = 0; !(newtagset & 1 << i); i++) ;
-        selmon->pertag->curtag = i + 1;
-    }
+	/* test if the user did not select the same tag */
+	if (!(newtagset & 1 << (selmon->pertag->curtag - 1))) {
+		selmon->pertag->prevtag = selmon->pertag->curtag;
+		for (i = 0; !(newtagset & 1 << i); i++) ;
+		selmon->pertag->curtag = i + 1;
+	}
 
-    /* apply settings for this view */
-    selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
-    selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
-    selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
-    selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
-    selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
+	/* apply settings for this view */
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag];
+	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag];
+	selmon->sellt = selmon->pertag->sellts[selmon->pertag->curtag];
+	selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+	selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
 
-    focusclient(focustop(selmon), 1);
-    arrange(selmon);
+	focusclient(focustop(selmon), 1);
+	arrange(selmon);
 	printstatus();
 }
 
