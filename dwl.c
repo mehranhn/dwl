@@ -2633,6 +2633,8 @@ void
 setfloating(Client *c, int floating)
 {
 	c->isfloating = floating;
+	if (!c->mon)
+		return;
 	wlr_scene_node_reparent(&c->scene->node, layers[c->isfloating ? LyrFloat : LyrTile]);
 	if (c->isfloating && !c->bw)
 		resize(c, c->mon->m, 0, 1);
@@ -2789,6 +2791,7 @@ setmon(Client *c, Monitor *m, uint32_t newtags)
 		resize(c, c->geom, 0, 1);
 		c->tags = newtags ? newtags : m->tagset[m->seltags]; /* assign tags of target monitor */
 		setfullscreen(c, c->isfullscreen); /* This will call arrange(c->mon) */
+		setfloating(c, c->isfloating);
 	}
 	focusclient(focustop(selmon), 1);
 }
