@@ -111,6 +111,8 @@ static const TagData tags[] = {
     { &layouts[0],       0.55f,    1, },
 };
 
+static const unsigned int swipe_min_threshold = 0;
+
 /* tagging - tagcount must be no greater than 31 */
 static const int tagcount = LENGTH(tags);
 
@@ -312,4 +314,15 @@ static const Button buttons[] = {
 	{ MODKEY, BTN_LEFT,   moveresize,     {.ui = CurMove} },
 	{ MODKEY, BTN_MIDDLE, togglefloating, {0} },
 	{ MODKEY, BTN_RIGHT,  moveresize,     {.ui = CurResize} },
+};
+
+static const Gesture gestures[] = {
+	{ SWIPE_3_LEFT,  shiftviewvisible, {.i = 1 } },
+	{ SWIPE_3_RIGHT, shiftviewvisible, {.i = -1} },
+	{ SWIPE_3_UP,    focusstack,       {.i = -1 } },
+	{ SWIPE_3_DOWN,  focusstack,       {.i = 1} },
+	{ SWIPE_4_LEFT,  shiftview,        {.i = 1 } },
+	{ SWIPE_4_RIGHT, shiftview,        {.i = -1} },
+	{ SWIPE_4_UP,    pushup,           {0} },
+	{ SWIPE_4_DOWN,  pushdown,         {0} },
 };
