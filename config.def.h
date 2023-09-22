@@ -180,6 +180,8 @@ static const Key keys[] = {
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_o,       incovgaps,      {.i = -1 } },
 	{ 0,       MODKEY,                    Key_Return,  zoom,           {0} },
 	{ 0,       MODKEY,                    Key_Tab,     view,           {0} },
+	{ 0,       MODKEY,                    XKB_KEY_a,   shiftview,      { .i = -1 } },
+	{ 0,       MODKEY,                    XKB_KEY_semicolon, shiftview,{ .i = 1 } },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_c,       killclient,     {0} },
 	{ 0,       MODKEY,                    Key_t,       setlayout,      {.v = &layouts[0]} },
 	{ 0,       MODKEY,                    Key_f,       setlayout,      {.v = &layouts[1]} },
