@@ -52,16 +52,16 @@ static const Layout layouts[] = {
 /* tagging */
 static const TagData tags[] = {
 	/* symbol   layout             mfact     nmaster */
-    { &layouts[0],       0.55f,    1, },
-    { &layouts[2],       0.55f,    1, },
-    { &layouts[0],       0.55f,    1, },
-    { &layouts[2],       0.55f,    1, },
-    { &layouts[0],       0.55f,    1, },
-    { &layouts[2],       0.55f,    1, },
-    { &layouts[0],       0.75f,    1, },
-    { &layouts[0],       0.55f,    1, },
-    { &layouts[0],       0.55f,    1, },
-    { &layouts[0],       0.55f,    1, },
+	{ &layouts[0],       0.55f,    1, },
+	{ &layouts[2],       0.55f,    1, },
+	{ &layouts[0],       0.55f,    1, },
+	{ &layouts[2],       0.55f,    1, },
+	{ &layouts[0],       0.55f,    1, },
+	{ &layouts[2],       0.55f,    1, },
+	{ &layouts[0],       0.75f,    1, },
+	{ &layouts[0],       0.55f,    1, },
+	{ &layouts[0],       0.55f,    1, },
+	{ &layouts[0],       0.55f,    1, },
 };
 
 static const unsigned int swipe_min_threshold = 0;
