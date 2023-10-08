@@ -72,7 +72,8 @@ static const Rule rules[] = {
 static ToggleProc toggleprocs[] = {
 	/* id               autosatrt   signal       notification ID  notification title     notification icon    cmd           not my real location                      0 */
 	{ "gammastep",      1,          SIGTERM,     "8001",          "Blue Light Filter",   "eye-solid",         {"gammastep", "-l", "36.51212:51.1251775", "-r", NULL}, 0},
-	{ "swayidle",       1,          SIGTERM,     "8002",          "Swayidle",            "eye-solid",         {"swayidle", NULL},                                     0},
+	{ "swayidle",       1,          SIGTERM,     "8002",          "Swayidle",            "coffee",            {"swayidle", NULL},                                     0},
+	{ "ianny",          1,          SIGTERM,     "8003",          "Ianny",               "sleep",             {"ianny", NULL},                                        0},
 	{ "lf",             1,          SIGTERM,     NULL,            NULL,                  NULL,                {"lf", "-server", NULL}, 0},
 	{ "dbus-update",    1,          SIGTERM,     NULL,            NULL,                  NULL,                {"dbus-update-activation-environment", "--systemd", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL}, 0},
 	{ "systemctl-env",  1,          SIGTERM,     NULL,            NULL,                  NULL,                {"systemctl", "--user", "import-environment", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP", NULL}, 0},
@@ -278,6 +279,7 @@ static const Key keys[] = {
 	/* toggleprocs */
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_bracketright,          toggleproccmd,            {.v = "gammastep"} },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT,                         Key_bracketleft,           toggleproccmd,            {.v = "swayidle"} },
+	{ 0,       MODKEY|WLR_MODIFIER_CTRL|WLR_MODIFIER_SHIFT,       Key_bracketleft,           toggleproccmd,            {.v = "ianny"} },
 	/* general tasks */
 	{ 0,       MODKEY|WLR_MODIFIER_ALT,                           Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_y", NULL}} },
 	{ 0,       MODKEY|WLR_MODIFIER_CTRL,                          Key_space,                 spawnnotgamemode,         {.v = (char *[]){"mcontrol", "menu_path", NULL}} },
