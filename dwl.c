@@ -1292,7 +1292,7 @@ createmon(struct wl_listener *listener, void *data)
 	m->pertag = calloc(1, sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
 
-	for (i = 0; i <= tagcount; i++) {
+	for (i = 0; i <= TAGCOUNT; i++) {
 		if (i != 0) {
 			m->pertag->nmasters[i] = tags[i - 1].nmasters;
 			m->pertag->mfacts[i] = tags[i - 1].mfacts;
@@ -3037,9 +3037,9 @@ shiftview(const Arg *arg)
 	int nextseltags, curseltags = selmon->tagset[selmon->seltags];
 
 	if (arg->i > 0) // left circular shift
-		a.i = (curseltags << arg->i) | (curseltags >> (tagcount - arg->i));
+		a.i = (curseltags << arg->i) | (curseltags >> (TAGCOUNT - arg->i));
 	else // right circular shift
-		a.i = curseltags >> (- arg->i) | (curseltags << (tagcount + arg->i));
+		a.i = curseltags >> (- arg->i) | (curseltags << (TAGCOUNT + arg->i));
 
 	view(&a);
 }
@@ -3049,7 +3049,7 @@ shiftviewvisible(const Arg *arg)
 {
 	Arg a;
 	Client *c;
-	size_t ntags = tagcount;
+	size_t ntags = TAGCOUNT;
 	bool visible = false;
 	int i = arg->i;
 	int count = 0;
