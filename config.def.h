@@ -1,6 +1,11 @@
 #define PATCHALWAYSCENTER 1
 #define PATCHATTACHBOTTOM 1
 
+/* Taken from https://github.com/djpohly/dwl/issues/466 */
+#define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
+                        ((hex >> 16) & 0xFF) / 255.0f, \
+                        ((hex >> 8) & 0xFF) / 255.0f, \
+                        (hex & 0xFF) / 255.0f }
 /* appearance */
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
@@ -12,16 +17,19 @@ static const unsigned int gappih           = 10; /* horiz inner gap between wind
 static const unsigned int gappiv           = 10; /* vert inner gap between windows */
 static const unsigned int gappoh           = 10; /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov           = 10; /* vert outer gap between windows and screen edge */
-static const float rootcolor[]             = {0.3, 0.3, 0.3, 1.0};
-static const float bordercolor[]           = {0.5, 0.5, 0.5, 1.0};
-static const float focuscolor[]            = {1.0, 0.0, 0.0, 1.0};
+static const float bordercolor[]           = COLOR(0x444444ff);
+static const float focuscolor[]            = COLOR(0x005577ff);
+static const float urgentcolor[]           = COLOR(0xff0000ff);
 static const char *cursortheme             = NULL; /* theme from /usr/share/cursors/xorg-x11 */
 static const unsigned int cursorsize       = 24;
 /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
-static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 1.0};
+static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 1.0}; /* You can also use glsl colors */
 
 /* pointer constraints */
 static const int allow_constrain      = 1;
+
+/* logging */
+static int log_level = WLR_ERROR;
 
 static const Rule rules[] = {
 	/* id         app_id     title       tags mask     isfloating   monitor x  y  width heigh t*/
@@ -64,10 +72,10 @@ static const TagData tags[] = {
 	{ &layouts[0],       0.55f,    1, },
 };
 
-static const unsigned int swipe_min_threshold = 0;
+/* tagging - TAGCOUNT must be no greater than 31 */
+#define TAGCOUNT LENGTH(tags)
 
-/* tagging - tagcount must be no greater than 31 */
-static const int tagcount = LENGTH(tags);
+static const unsigned int swipe_min_threshold = 0;
 
 /* monitors */
 static const MonitorRule monrules[] = {
@@ -182,8 +190,8 @@ static const Key keys[] = {
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_o,       incovgaps,      {.i = -1 } },
 	{ 0,       MODKEY,                    Key_Return,  zoom,           {0} },
 	{ 0,       MODKEY,                    Key_Tab,     view,           {0} },
-	{ 0,       MODKEY,                    XKB_KEY_a,   shiftview,      { .i = -1 } },
-	{ 0,       MODKEY,                    XKB_KEY_semicolon, shiftview,{ .i = 1 } },
+	{ 0,       MODKEY,                    Key_a,       shiftview,      { .i = -1 } },
+	{ 0,       MODKEY,                    Key_semicolon, shiftview,    { .i = 1 } },
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_c,       killclient,     {0} },
 	{ 0,       MODKEY,                    Key_t,       setlayout,      {.v = &layouts[0]} },
 	{ 0,       MODKEY,                    Key_f,       setlayout,      {.v = &layouts[1]} },
@@ -211,7 +219,7 @@ static const Key keys[] = {
 	{ 0,       MODKEY|WLR_MODIFIER_SHIFT, Key_q,       quit,           {0} },
 
 	/* Ctrl-Alt-Backspace and Ctrl-Alt-Fx used to be handled by X server */
-	{ WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,Key_BackSpace, quit, {0} },
+	{ 0, WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT,Key_BackSpace, quit, {0} },
 #define CHVT(KEY,n) { 0, WLR_MODIFIER_CTRL|WLR_MODIFIER_ALT, KEY, chvt, {.ui = (n)} }
 	CHVT(Key_F1, 1), CHVT(Key_F2,  2),  CHVT(Key_F3,  3),  CHVT(Key_F4,  4),
 	CHVT(Key_F5, 5), CHVT(Key_F6,  6),  CHVT(Key_F7,  7),  CHVT(Key_F8,  8),
