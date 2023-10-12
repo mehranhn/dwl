@@ -1,6 +1,11 @@
 #define PATCHALWAYSCENTER 1
 #define PATCHATTACHBOTTOM 1
 
+/* Taken from https://github.com/djpohly/dwl/issues/466 */
+#define COLOR(hex)    { ((hex >> 24) & 0xFF) / 255.0f, \
+                        ((hex >> 16) & 0xFF) / 255.0f, \
+                        ((hex >> 8) & 0xFF) / 255.0f, \
+                        (hex & 0xFF) / 255.0f }
 /* appearance */
 static const int sloppyfocus               = 1;  /* focus follows mouse */
 static const int bypass_surface_visibility = 0;  /* 1 means idle inhibitors will disable idle tracking even if it's surface isn't visible  */
@@ -12,16 +17,19 @@ static const unsigned int gappih           = 9; /* horiz inner gap between windo
 static const unsigned int gappiv           = 9; /* vert inner gap between windows */
 static const unsigned int gappoh           = 6; /* horiz outer gap between windows and screen edge */
 static const unsigned int gappov           = 6; /* vert outer gap between windows and screen edge */
-static const float rootcolor[]             = {0.3, 0.3, 0.3, 1.0};
-static const float bordercolor[]           = {0.5, 0.5, 0.5, 1.0};
-static const float focuscolor[]            = {1.0, 0.0, 0.0, 1.0};
+static const float bordercolor[]           = COLOR(0x444444ff);
+static const float focuscolor[]            = COLOR(0x005577ff);
+static const float urgentcolor[]           = COLOR(0xff0000ff);
 static const char *cursortheme             = NULL; /* theme from /usr/share/cursors/xorg-x11 */
 static const unsigned int cursorsize       = 24;
 /* To conform the xdg-protocol, set the alpha to zero to restore the old behavior */
-static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 0.0};
+static const float fullscreen_bg[]         = {0.1, 0.1, 0.1, 0.0}; /* You can also use glsl colors */
 
 /* pointer constraints */
 static const int allow_constrain      = 1;
+
+/* logging */
+static int log_level = WLR_ERROR;
 
 #define LM 0
 #define RM 1
@@ -111,10 +119,10 @@ static const TagData tags[] = {
 	{ &layouts[0],       0.55f,    1, },
 };
 
-static const unsigned int swipe_min_threshold = 0;
+/* tagging - TAGCOUNT must be no greater than 31 */
+#define TAGCOUNT LENGTH(tags)
 
-/* tagging - tagcount must be no greater than 31 */
-static const int tagcount = LENGTH(tags);
+static const unsigned int swipe_min_threshold = 0;
 
 /* monitors */
 static const MonitorRule monrules[] = {
