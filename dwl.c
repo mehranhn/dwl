@@ -2052,7 +2052,7 @@ int
 keyrepeat(void *data)
 {
 	Keyboard *kb = data;
-	if (kb->keycode || kb->wlr_keyboard->repeat_info.rate <= 0)
+	if (!kb->keycode || kb->wlr_keyboard->repeat_info.rate <= 0)
 		return 0;
 
 	wl_event_source_timer_update(kb->key_repeat_source,
